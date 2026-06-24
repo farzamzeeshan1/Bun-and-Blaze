@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Receipt - Bun &amp; Blaze</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Archivo:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --red: #C8102E;
+      --mustard: #F2B705;
+      --char: #1C1C1C;
+      --cream: #FFF8E7;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Archivo', sans-serif;
+      background: var(--cream);
+      color: var(--char);
+    }
+
+    /* TOP BAR */
+    .top-bar {
+      background: var(--char);
+      border-bottom: 4px solid var(--mustard);
+      padding: 14px 28px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .top-bar .logo {
+      color: var(--cream);
+      font-family: 'Archivo Black', sans-serif;
+      font-size: 20px;
+      text-decoration: none;
+      flex: 1;
+    }
+    .btn {
+      display: inline-block;
+      padding: 9px 18px;
+      background: var(--red);
+      color: var(--cream);
+      border: none;
+      border-radius: 4px;
+      font-weight: 700;
+      font-size: 14px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.2s;
+    }
+    .btn:hover { background: var(--mustard); color: var(--char); }
+    .btn-outline {
+      background: transparent;
+      border: 2px solid var(--cream);
+      color: var(--cream);
+    }
+    .btn-outline:hover { background: var(--cream); color: var(--char); }
+
+    /* WRAP */
+    .wrap {
+      max-width: 800px;
+      margin: 40px auto;
+      padding: 0 28px;
+    }
+
+    /* RECEIPT CARD */
+    .receipt-card {
+      background: #fff;
+      border: 3px solid var(--char);
+      border-radius: 12px;
+      padding: 32px;
+      box-shadow: 6px 6px 0 var(--mustard);
+    }
+    .receipt-header {
+      text-align: center;
+      margin-bottom: 28px;
+      border-bottom: 2px dashed #ddd;
+      padding-bottom: 20px;
+    }
+    .receipt-header h1 {
+      font-family: 'Archivo Black', sans-serif;
+      font-size: 32px;
+      color: var(--red);
+      margin-bottom: 4px;
+    }
+    .receipt-header .brand {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--char);
+    }
+    .receipt-header .timestamp {
+      font-size: 13px;
+      color: #888;
+      margin-top: 6px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+    }
+    th, td {
+      padding: 11px 14px;
+      border-bottom: 1px solid #eee;
+      text-align: left;
+    }
+    th {
+      background: var(--mustard);
+      color: var(--char);
+      font-family: 'Archivo Black', sans-serif;
+      font-size: 13px;
+      text-transform: uppercase;
+    }
+    tr:last-child td { border-bottom: none; }
+
+    .totals {
+      border-top: 2px solid var(--char);
+      padding-top: 16px;
+      margin-top: 8px;
+    }
+    .totals .row {
+      display: flex;
+      justify-content: space-between;
+      padding: 5px 0;
+      font-size: 15px;
+    }
+    .totals .row.grand {
+      font-family: 'Archivo Black', sans-serif;
+      font-size: 20px;
+      color: var(--red);
+      border-top: 2px dashed #ddd;
+      margin-top: 8px;
+      padding-top: 12px;
+    }
+
+    .thank-you {
+      text-align: center;
+      margin-top: 24px;
+      padding: 16px;
+      background: var(--char);
+      color: var(--cream);
+      border-radius: 6px;
+      font-family: 'Archivo Black', sans-serif;
+      font-size: 16px;
+    }
+
+    .actions {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      margin-top: 24px;
+      flex-wrap: wrap;
+    }
+
+    .no-order {
+      text-align: center;
+      padding: 60px 20px;
+      color: #888;
+    }
+    .no-order h2 { font-size: 24px; margin-bottom: 12px; color: var(--char); }
+  </style>
+</head>
+<body>
+
+<div class="top-bar">
+  <a href="bun-and-blaze.html" class="logo">🔥 BUN &amp; BLAZE</a>
+  <a href="bun-and-blaze.html" class="btn btn-outline">🏠 Home</a>
+  <a href="order.html" class="btn btn-outline">New Order</a>
+</div>
+
+<div class="wrap">
+  <div class="receipt-card" id="receiptCard">
+    <div class="receipt-header">
+      <div class="brand">🔥 BUN &amp; BLAZE</div>
+      <h1>Receipt</h1>
+      <div class="timestamp" id="orderTime"></div>
+    </div>
+
+    <div id="receiptContent">
+      <!-- Filled by JS -->
+    </div>
+  </div>
+</div>
+
+<script>
+  const orderData = JSON.parse(sessionStorage.getItem('orderData') || 'null');
+
+  if (!orderData || !orderData.items || orderData.items.length === 0) {
+    // No order data — redirect to home
+    document.querySelector('.receipt-card').innerHTML = `
+      <div class="no-order">
+        <h2>Koi order nahi mila.</h2>
+        <p>Pehle order place karein.</p>
+        <br>
+        <a href="order.html" class="btn" style="margin-top:16px;">Order Karo</a>
+      </div>`;
+  } else {
+    // Timestamp
+    const ts = new Date(orderData.timestamp);
+    document.getElementById('orderTime').textContent =
+      ts.toLocaleDateString('en-PK', { weekday:'long', year:'numeric', month:'long', day:'numeric' }) +
+      ' at ' + ts.toLocaleTimeString('en-PK', { hour:'2-digit', minute:'2-digit' });
+
+    // Table
+    let rowsHTML = '';
+    orderData.items.forEach(item => {
+      const lineTotal = (item.price * item.qty).toFixed(2);
+      rowsHTML += `<tr>
+        <td>${item.name}</td>
+        <td>${item.qty}</td>
+        <td>$${item.price.toFixed(2)}</td>
+        <td><strong>$${lineTotal}</strong></td>
+      </tr>`;
+    });
+
+    document.getElementById('receiptContent').innerHTML = `
+      <table>
+        <thead>
+          <tr><th>Item</th><th>Qty</th><th>Price</th><th>Total</th></tr>
+        </thead>
+        <tbody>${rowsHTML}</tbody>
+      </table>
+      <div class="totals">
+        <div class="row"><span>Subtotal</span><span>$${orderData.subtotal.toFixed(2)}</span></div>
+        <div class="row"><span>Tax (7%)</span><span>$${orderData.tax.toFixed(2)}</span></div>
+        <div class="row grand"><span>Grand Total</span><span>$${orderData.total.toFixed(2)}</span></div>
+      </div>
+      <div class="thank-you">🙏 Shukriya! Aapka order place ho gaya hai.</div>
+      <div class="actions">
+        <a href="bun-and-blaze.html" class="btn">🏠 Home par Jao</a>
+        <a href="order.html" class="btn" style="background:#444;">New Order</a>
+        <button onclick="window.print()" class="btn" style="background:#2a7a2a;">🖨 Print</button>
+      </div>`;
+  }
+</script>
+</body>
+</html>

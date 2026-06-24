@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bun & Blaze — Smash Burgers, Fast.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Archivo:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --red:#C8102E;
+    --mustard:#F2B705;
+    --char:#1C1C1C;
+    --cream:#FFF8E7;
+    --brown:#3B2A22;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    font-family:'Archivo',sans-serif;
+    background:var(--cream);
+    color:var(--char);
+    overflow-x:hidden;
+  }
+  h1,h2,h3,.display{
+    font-family:'Archivo Black',sans-serif;
+    text-transform:uppercase;
+    letter-spacing:-0.01em;
+    line-height:0.95;
+  }
+  a{color:inherit;text-decoration:none;}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 28px;}
+
+  /* ---------- NAV ---------- */
+  nav{
+    position:fixed;top:0;left:0;right:0;z-index:50;
+    background:var(--char);
+    border-bottom:4px solid var(--mustard);
+  }
+  .nav-inner{
+    max-width:1180px;margin:0 auto;padding:14px 28px;
+    display:flex;align-items:center;justify-content:space-between;
+  }
+  .logo{
+    color:var(--cream);font-family:'Archivo Black';font-size:22px;
+    display:flex;align-items:center;gap:8px;
+  }
+  .logo .flame{color:var(--mustard);}
+  .nav-links{display:flex;gap:28px;}
+  .nav-links a{
+    color:var(--cream);font-weight:700;font-size:14px;
+    text-transform:uppercase;letter-spacing:0.04em;
+    position:relative;padding:4px 0;
+  }
+  .nav-links a:after{
+    content:'';position:absolute;left:0;bottom:-2px;width:0;height:3px;
+    background:var(--red);transition:width .2s ease;
+  }
+  .nav-links a:hover:after{width:100%;}
+  .nav-cta{
+    background:var(--red);color:var(--cream);padding:9px 18px;
+    font-weight:700;font-size:13px;text-transform:uppercase;
+    border-radius:3px;border:2px solid var(--cream);
+  }
+  .nav-toggle{display:none;}
+
+  /* ---------- HERO ---------- */
+  header.hero{
+    position:relative;
+    background:var(--char);
+    padding:150px 0 90px;
+    overflow:hidden;
+  }
+  .hero-grid{
+    display:grid;grid-template-columns:1.1fr 0.9fr;gap:40px;align-items:center;
+  }
+  .eyebrow{
+    display:inline-flex;align-items:center;gap:8px;
+    background:var(--mustard);color:var(--char);
+    font-weight:700;font-size:13px;letter-spacing:0.06em;text-transform:uppercase;
+    padding:6px 14px;border-radius:30px;margin-bottom:22px;
+  }
+  .hero h1{
+    color:var(--cream);font-size:clamp(48px,7vw,92px);margin-bottom:18px;
+  }
+  .hero h1 .pop{color:var(--red);}
+  .hero p.sub{
+    color:#D8D2C6;font-size:18px;max-width:440px;margin-bottom:32px;line-height:1.5;
+  }
+  .hero-ctas{display:flex;gap:14px;flex-wrap:wrap;}
+  .btn{
+    display:inline-block;padding:16px 30px;font-weight:700;font-size:15px;
+    text-transform:uppercase;letter-spacing:0.03em;border-radius:4px;
+    transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .btn-primary{
+    background:var(--red);color:var(--cream);
+    box-shadow:5px 5px 0 var(--mustard);
+  }
+  .btn-primary:hover{transform:translate(-2px,-2px);box-shadow:7px 7px 0 var(--mustard);}
+  .btn-ghost{
+    background:transparent;color:var(--cream);border:2px solid var(--cream);
+  }
+  .btn-ghost:hover{background:var(--cream);color:var(--char);}
+
+  /* burger graphic */
+  .burger-stage{position:relative;height:420px;display:flex;align-items:center;justify-content:center;}
+  .burger{position:relative;width:320px;}
+  .layer{
+    width:100%;border-radius:50%;position:relative;
+  }
+  .bun-top{
+    height:90px;background:linear-gradient(180deg,#E8A33D,#C97A1F);
+    border-radius:50% 50% 18% 18% / 70% 70% 30% 30%;
+    box-shadow:inset 0 -8px 0 rgba(0,0,0,0.12);
+    z-index:6;
+  }
+  .seed{position:absolute;width:6px;height:10px;background:#FFF3D6;border-radius:50%;}
+  .lettuce{
+    height:26px;margin-top:-14px;background:#4F9D3D;
+    border-radius:40% 40% 10% 10%/ 60% 60% 10% 10%;
+    clip-path:polygon(0 40%,5% 0,12% 50%,20% 5%,30% 55%,40% 0,50% 50%,60% 5%,70% 55%,80% 0,88% 50%,95% 0,100% 40%,100% 100%,0 100%);
+    z-index:5;
+  }
+  .cheese{
+    height:20px;margin-top:-10px;background:var(--mustard);
+    clip-path:polygon(0 0,100% 0,92% 100%,8% 100%);
+    z-index:4;
+  }
+  .patty{
+    height:38px;margin-top:-6px;background:linear-gradient(180deg,#5A3A28,#3B2A22);
+    border-radius:50px;box-shadow:inset 0 -6px 0 rgba(0,0,0,0.25);
+    z-index:3;
+  }
+  .tomato{
+    height:14px;margin-top:-8px;background:var(--red);
+    border-radius:50%;z-index:2;
+  }
+  .bun-bottom{
+    height:54px;margin-top:-10px;background:linear-gradient(180deg,#D88E2E,#B26B1B);
+    border-radius:20% 20% 50% 50% / 30% 30% 70% 70%;
+    z-index:1;
+  }
+  .burger-stage::before{
+    content:'';position:absolute;width:340px;height:60px;background:radial-gradient(ellipse at center, rgba(0,0,0,0.35), transparent 70%);
+    bottom:10px;z-index:0;
+  }
+  .badge{
+    position:absolute;top:6px;right:-10px;
+    width:108px;height:108px;background:var(--red);color:var(--cream);
+    border-radius:50%;display:flex;align-items:center;justify-content:center;
+    text-align:center;font-family:'Archivo Black';font-size:13px;line-height:1.15;
+    transform:rotate(12deg);border:3px dashed var(--mustard);
+    animation:spin 18s linear infinite;
+  }
+  @keyframes spin{from{transform:rotate(12deg);}to{transform:rotate(372deg);}}
+
+  /* ---------- MARQUEE ---------- */
+  .marquee-strip{
+    background:var(--mustard);border-top:4px solid var(--char);border-bottom:4px solid var(--char);
+    overflow:hidden;white-space:nowrap;padding:12px 0;
+  }
+  .marquee-track{display:inline-block;animation:scroll 22s linear infinite;}
+  .marquee-track span{
+    font-family:'Archivo Black';font-size:16px;color:var(--char);
+    margin:0 28px;text-transform:uppercase;letter-spacing:0.04em;
+  }
+  @keyframes scroll{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+
+  /* ---------- SECTION HEADERS ---------- */
+  .section{padding:90px 0;}
+  .section-head{margin-bottom:48px;max-width:600px;}
+  .section-head .tag{
+    color:var(--red);font-weight:700;font-size:13px;text-transform:uppercase;
+    letter-spacing:0.08em;margin-bottom:10px;display:block;
+  }
+  .section-head h2{font-size:clamp(32px,4.5vw,52px);}
+
+  /* ---------- MENU ---------- */
+  .menu-tabs{display:flex;gap:10px;margin-bottom:40px;flex-wrap:wrap;}
+  .menu-tab{
+    padding:10px 20px;border:2px solid var(--char);border-radius:30px;
+    font-weight:700;font-size:14px;text-transform:uppercase;cursor:default;
+  }
+  .menu-tab.active{background:var(--char);color:var(--cream);}
+
+  .menu-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;}
+  .menu-card{
+    background:#fff;border:3px solid var(--char);border-radius:8px;
+    padding:22px;position:relative;transition:transform .15s ease;
+  }
+  .menu-card:hover{transform:translateY(-6px);}
+  .menu-card .stamp{
+    position:absolute;top:-14px;right:-14px;background:var(--red);color:var(--cream);
+    font-family:'Archivo Black';font-size:11px;padding:8px 10px;border-radius:50%;
+    width:54px;height:54px;display:flex;align-items:center;justify-content:center;
+    text-align:center;line-height:1.1;transform:rotate(8deg);
+    border:2px dashed var(--mustard);
+  }
+  .menu-card h3{font-size:19px;margin-bottom:8px;}
+  .menu-card p{font-size:14px;color:#5b5b5b;line-height:1.5;margin-bottom:14px;}
+  .menu-card .price{
+    font-family:'Archivo Black';font-size:20px;color:var(--red);
+  }
+
+  /* ---------- COMBO BAND ---------- */
+  .combo-band{
+    background:var(--brown);color:var(--cream);padding:70px 0;
+    position:relative;
+  }
+  .combo-inner{
+    display:flex;align-items:center;justify-content:space-between;gap:40px;flex-wrap:wrap;
+  }
+  .combo-text h2{font-size:clamp(28px,4vw,44px);color:var(--cream);margin-bottom:14px;}
+  .combo-text p{color:#E3D6C8;max-width:420px;font-size:15.5px;}
+  .combo-price{
+    background:var(--mustard);color:var(--char);padding:26px 36px;border-radius:8px;
+    text-align:center;border:3px solid var(--cream);
+  }
+  .combo-price .amt{font-family:'Archivo Black';font-size:46px;}
+  .combo-price .label{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;}
+
+  /* ---------- ABOUT / WHY ---------- */
+  .why-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:28px;}
+  .why-card{padding:28px;border-left:4px solid var(--red);}
+  .why-card .num{font-family:'Archivo Black';color:var(--mustard);font-size:14px;display:block;margin-bottom:10px;}
+  .why-card h3{font-size:19px;margin-bottom:10px;}
+  .why-card p{font-size:14.5px;color:#5b5b5b;line-height:1.55;}
+
+  /* ---------- LOCATION / HOURS ---------- */
+  .location{background:var(--char);color:var(--cream);}
+  .loc-grid{display:grid;grid-template-columns:1fr 1fr;gap:50px;align-items:start;}
+  .loc-grid h2{color:var(--cream);}
+  .loc-row{display:flex;justify-content:space-between;padding:14px 0;border-bottom:1px solid #3a3a3a;font-size:15px;}
+  .loc-row span:first-child{color:#A8A39A;font-weight:700;}
+  .map-block{
+    background:var(--brown);border-radius:8px;height:280px;
+    display:flex;align-items:center;justify-content:center;color:#D8C9B5;
+    font-weight:700;text-transform:uppercase;letter-spacing:0.05em;font-size:14px;
+    border:3px dashed var(--mustard);
+  }
+
+  /* ---------- FOOTER ---------- */
+  footer{background:var(--red);color:var(--cream);padding:50px 0 24px;}
+  .footer-top{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:20px;margin-bottom:30px;}
+  .footer-top h2{font-size:clamp(26px,4vw,40px);color:var(--cream);}
+  .footer-bottom{
+    border-top:2px solid rgba(255,255,255,0.3);padding-top:18px;
+    display:flex;justify-content:space-between;font-size:13px;color:#FCE0DA;flex-wrap:wrap;gap:10px;
+  }
+
+  /* focus visibility */
+  a:focus-visible, button:focus-visible{outline:3px solid var(--mustard);outline-offset:2px;}
+
+  /* ---------- SCROLL REVEAL ---------- */
+  .reveal{opacity:0;transform:translateY(34px);transition:opacity .7s ease, transform .7s ease;}
+  .reveal.in{opacity:1;transform:translateY(0);}
+  .reveal-stagger > *{opacity:0;transform:translateY(28px);transition:opacity .55s ease, transform .55s ease;}
+  .reveal-stagger.in > *{opacity:1;transform:translateY(0);}
+  .reveal-stagger > *:nth-child(1){transition-delay:.05s;}
+  .reveal-stagger > *:nth-child(2){transition-delay:.15s;}
+  .reveal-stagger > *:nth-child(3){transition-delay:.25s;}
+  .reveal-stagger > *:nth-child(4){transition-delay:.35s;}
+  .reveal-stagger > *:nth-child(5){transition-delay:.45s;}
+  .reveal-stagger > *:nth-child(6){transition-delay:.55s;}
+
+  /* ---------- NAV SCROLLED STATE ---------- */
+  nav{transition:padding .25s ease, box-shadow .25s ease;}
+  nav.scrolled{box-shadow:0 6px 18px rgba(0,0,0,0.35);}
+  nav.scrolled .nav-inner{padding:8px 28px;}
+
+  /* ---------- STEAM PARTICLES ---------- */
+  .steam{
+    position:absolute;bottom:42%;left:50%;width:10px;height:10px;
+    border-radius:50%;background:rgba(255,255,255,0.55);filter:blur(6px);
+    pointer-events:none;opacity:0;
+  }
+  @keyframes rise{
+    0%{opacity:0;transform:translate(-50%,0) scale(0.6);}
+    15%{opacity:.55;}
+    80%{opacity:.15;}
+    100%{opacity:0;transform:translate(-50%,-160px) scale(1.6);}
+  }
+
+  /* ---------- HERO ENTRANCE ---------- */
+  .hero-grid > div:first-child > *{opacity:0;transform:translateY(24px);animation:heroUp .7s ease forwards;}
+  .hero-grid .eyebrow{animation-delay:.05s;}
+  .hero-grid h1{animation-delay:.18s;}
+  .hero-grid p.sub{animation-delay:.32s;}
+  .hero-grid .hero-ctas{animation-delay:.46s;}
+  @keyframes heroUp{to{opacity:1;transform:translateY(0);}}
+
+  .burger-stage{opacity:0;transform:scale(.85) rotate(-6deg);animation:burgerIn .8s cubic-bezier(.2,.9,.25,1.2) forwards;animation-delay:.25s;}
+  @keyframes burgerIn{to{opacity:1;transform:scale(1) rotate(0deg);}}
+
+  .burger{animation:bob 4.5s ease-in-out infinite;}
+  @keyframes bob{0%,100%{transform:translateY(0);}50%{transform:translateY(-10px);}}
+
+  /* sizzle micro-jitter on patty */
+  .patty{animation:sizzle 2.4s ease-in-out infinite;}
+  @keyframes sizzle{0%,100%{transform:translateY(0) scaleX(1);}50%{transform:translateY(-1px) scaleX(1.01);}}
+
+  /* ---------- MENU CARD MOTION ---------- */
+  .menu-card{will-change:transform;transform-style:preserve-3d;}
+  .menu-card .price{transition:transform .2s ease;}
+  .menu-card:hover .price{transform:scale(1.08);}
+  .menu-card .stamp{transition:transform .3s ease;}
+  .menu-card:hover .stamp{transform:rotate(8deg) scale(1.12);}
+
+  /* ---------- COUNTER STATS ---------- */
+  .stats-strip{
+    background:var(--cream);border-top:3px solid var(--char);border-bottom:3px solid var(--char);
+    padding:36px 0;
+  }
+  .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);text-align:center;gap:20px;}
+  .stat .num{
+    font-family:'Archivo Black';font-size:clamp(28px,4vw,44px);color:var(--red);
+  }
+  .stat .lbl{font-size:13px;text-transform:uppercase;letter-spacing:0.05em;font-weight:700;color:var(--char);margin-top:4px;}
+
+  /* ---------- COMBO PULSE ---------- */
+  .combo-price{animation:pulseGlow 2.6s ease-in-out infinite;}
+  @keyframes pulseGlow{
+    0%,100%{box-shadow:0 0 0 0 rgba(242,183,5,0.0);}
+    50%{box-shadow:0 0 0 10px rgba(242,183,5,0.15);}
+  }
+
+  /* ---------- TESTIMONIAL TICKER ---------- */
+  .testi-wrap{overflow:hidden;position:relative;}
+  .testi-track{display:flex;gap:24px;animation:testiScroll 26s linear infinite;width:max-content;}
+  .testi-card{
+    background:#fff;border:2px solid var(--char);border-radius:8px;padding:20px 22px;width:300px;flex:0 0 auto;
+  }
+  .testi-card p{font-size:14.5px;color:#444;line-height:1.5;margin-bottom:10px;}
+  .testi-card .who{font-weight:700;font-size:13px;color:var(--red);text-transform:uppercase;letter-spacing:0.04em;}
+  @keyframes testiScroll{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+  .testi-wrap:hover .testi-track{animation-play-state:paused;}
+
+  /* ---------- SCROLL TOP BUTTON ---------- */
+  .to-top{
+    position:fixed;bottom:24px;right:24px;width:48px;height:48px;border-radius:50%;
+    background:var(--red);color:var(--cream);display:flex;align-items:center;justify-content:center;
+    font-weight:700;font-size:18px;opacity:0;pointer-events:none;transition:opacity .25s ease, transform .2s ease;
+    box-shadow:0 6px 14px rgba(0,0,0,0.3);z-index:60;border:2px solid var(--cream);
+  }
+  .to-top.show{opacity:1;pointer-events:auto;}
+  .to-top:hover{transform:translateY(-3px);}
+
+  @media (prefers-reduced-motion: reduce){
+    .badge, .marquee-track, .burger, .patty, .combo-price, .testi-track{animation:none;}
+    .reveal, .reveal-stagger > *{opacity:1;transform:none;transition:none;}
+    .hero-grid > div:first-child > *, .burger-stage{opacity:1;transform:none;animation:none;}
+  }
+
+  @media (max-width:900px){
+    .stats-grid{grid-template-columns:repeat(2,1fr);}
+  }
+
+  /* ---------- RESPONSIVE ---------- */
+  @media (max-width:900px){
+    .hero-grid{grid-template-columns:1fr;}
+    .burger-stage{height:300px;order:-1;}
+    .menu-grid{grid-template-columns:repeat(2,1fr);}
+    .why-grid{grid-template-columns:1fr;}
+    .loc-grid{grid-template-columns:1fr;}
+  }
+  @media (max-width:600px){
+    .nav-links{display:none;}
+    .menu-grid{grid-template-columns:1fr;}
+    .combo-inner{flex-direction:column;align-items:flex-start;}
+    .footer-top{flex-direction:column;align-items:flex-start;}
+  }
+
+/* Order Modal Styles */
+.order-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  display: none;
+  z-index: 1000;
+}
+.order-modal {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  z-index: 1001;
+}
+.order-modal.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+.order-modal .order-content {
+  background: var(--cream);
+  color: var(--char);
+  padding: 24px;
+  border-radius: 8px;
+  max-width: 90%;
+  max-height: 80%;
+  overflow-y: auto;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  position: relative;
+}
+.order-overlay.show {
+  display: block;
+}
+.order-close {
+  background: none;
+  border: none;
+  font-size: 24px;
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  cursor: pointer;
+}
+.order-items label {
+  cursor: pointer;
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <div class="logo"><span class="flame">🔥</span>BUN & BLAZE</div>
+    <div class="nav-links">
+      <a href="#menu">Menu</a>
+      <a href="menu.html">Full Menu</a>
+      <a href="#combos">Combos</a>
+      <a href="#why">Why Us</a>
+      <a href="#visit">Visit</a>
+    </div>
+      <a href="order.html" class="nav-cta order-trigger">Order Now</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <span class="eyebrow">Smashed fresh · Served in minutes</span>
+      <h1>Burgers that<br><span class="pop">hit different.</span></h1>
+      <p class="sub">Hand-pressed smash patties, toasted buns, and fries that never sit longer than 90 seconds. No drive-thru wait, no soggy bottoms.</p>
+      <div class="hero-ctas">
+        <a href="#menu" class="btn btn-primary">See The Menu</a>
+        <a href="#visit" class="btn btn-ghost">Find a Location</a>
+      </div>
+    </div>
+    <div class="burger-stage">
+      <div class="steam" id="steamHost"></div>
+      <div class="burger">
+        <div class="badge">FRESH<br>SMASHED<br>DAILY</div>
+        <div class="layer bun-top"></div>
+        <div class="layer lettuce"></div>
+        <div class="layer cheese"></div>
+        <div class="layer patty"></div>
+        <div class="layer tomato"></div>
+        <div class="layer bun-bottom"></div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="marquee-strip">
+  <div class="marquee-track">
+    <span>★ SMASH BURGERS</span><span>★ CRISPY FRIES</span><span>★ HAND-SPUN SHAKES</span><span>★ READY IN 5 MIN</span>
+    <span>★ SMASH BURGERS</span><span>★ CRISPY FRIES</span><span>★ HAND-SPUN SHAKES</span><span>★ READY IN 5 MIN</span>
+  </div>
+</div>
+
+<div class="stats-strip reveal-stagger" id="statsStrip">
+  <div class="wrap stats-grid">
+    <div class="stat"><div class="num" data-target="1200000">0</div><div class="lbl">Burgers Smashed</div></div>
+    <div class="stat"><div class="num" data-target="14">0</div><div class="lbl">Locations</div></div>
+    <div class="stat"><div class="num" data-target="5">0</div><div class="lbl">Avg. Minute Wait</div></div>
+    <div class="stat"><div class="num" data-target="48">0</div><div class="lbl">Rated 4.8 / 5</div></div>
+  </div>
+</div>
+
+<section class="section">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="tag">What People Say</span>
+      <h2>Word of mouth, mostly mouth.</h2>
+    </div>
+    <div class="testi-wrap reveal">
+      <div class="testi-track">
+        <div class="testi-card"><p>"Ordered, sat down, and the tray was already on the table before I finished checking my phone. The crust on that patty is unreal."</p><div class="who">— Marcus T.</div></div>
+        <div class="testi-card"><p>"The Spicy Ember is the only burger that's made me sweat and ask for seconds in the same sitting."</p><div class="who">— Priya R.</div></div>
+        <div class="testi-card"><p>"Fries are still hot by the time I get to my car, which sounds small until you compare it to literally everywhere else."</p><div class="who">— Devon K.</div></div>
+        <div class="testi-card"><p>"Took my kids, they fought over the last fry instead of fighting with each other. 10/10."</p><div class="who">— Aaliyah S.</div></div>
+        <div class="testi-card"><p>"Ordered, sat down, and the tray was already on the table before I finished checking my phone. The crust on that patty is unreal."</p><div class="who">— Marcus T.</div></div>
+        <div class="testi-card"><p>"The Spicy Ember is the only burger that's made me sweat and ask for seconds in the same sitting."</p><div class="who">— Priya R.</div></div>
+        <div class="testi-card"><p>"Fries are still hot by the time I get to my car, which sounds small until you compare it to literally everywhere else."</p><div class="who">— Devon K.</div></div>
+        <div class="testi-card"><p>"Took my kids, they fought over the last fry instead of fighting with each other. 10/10."</p><div class="who">— Aaliyah S.</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="menu">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="tag">The Menu</span>
+      <h2>Pick your fire.</h2>
+    </div>
+    <div class="menu-tabs">
+      <div class="menu-tab active">Burgers</div>
+      <div class="menu-tab">Sides</div>
+      <div class="menu-tab">Shakes</div>
+    </div>
+    <div class="menu-grid reveal-stagger">
+      <div class="menu-card">
+        <div class="stamp">BEST<br>SELLER</div>
+        <h3>The Original Smash</h3>
+        <p>Single smashed patty, American cheese, pickles, onions, house sauce on a toasted bun.</p>
+        <div class="price">$5.99</div>
+      </div>
+      <div class="menu-card">
+        <h3>Double Blaze</h3>
+        <p>Two smashed patties, double cheese, crispy onions, smoky red sauce.</p>
+        <div class="price">$8.49</div>
+      </div>
+      <div class="menu-card">
+        <h3>Spicy Ember</h3>
+        <p>Single patty, pepper jack, jalapeños, chipotle mayo, crispy jalapeño chip.</p>
+        <div class="price">$6.99</div>
+      </div>
+      <div class="menu-card">
+        <h3>Crispy Chick</h3>
+        <p>Buttermilk-fried chicken thigh, slaw, pickles, honey-mustard drizzle.</p>
+        <div class="price">$7.49</div>
+      </div>
+      <div class="menu-card">
+        <h3>Blaze Fries</h3>
+        <p>Hand-cut fries tossed in smoked paprika salt, served with house dip.</p>
+        <div class="price">$3.49</div>
+      </div>
+      <div class="menu-card">
+        <h3>Salted Caramel Shake</h3>
+        <p>Hand-spun vanilla shake, salted caramel ribbon, whipped cream.</p>
+        <div class="price">$4.99</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="combo-band" id="combos">
+  <div class="wrap combo-inner reveal">
+    <div class="combo-text">
+      <h2>The Blaze Combo</h2>
+      <p>Any signature burger + Blaze Fries + a fountain drink. The one most people order twice in the same week.</p>
+    </div>
+    <div class="combo-price">
+      <div class="amt">$9.99</div>
+      <div class="label">Combo Price</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="why">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="tag">Why Bun & Blaze</span>
+      <h2>Fast doesn't mean lazy.</h2>
+    </div>
+    <div class="why-grid reveal-stagger">
+      <div class="why-card">
+        <span class="num">SMASHED</span>
+        <h3>Pressed to order</h3>
+        <p>Every patty hits the flat-top and gets smashed the moment you order — that's where the crust comes from, not a freezer.</p>
+      </div>
+      <div class="why-card">
+        <span class="num">5 MIN</span>
+        <h3>Real fast food</h3>
+        <p>From register to tray, most orders clear in under five minutes. No buzzer, no guesswork.</p>
+      </div>
+      <div class="why-card">
+        <span class="num">DAILY</span>
+        <h3>Buns baked daily</h3>
+        <p>Buns come from a local bakery every morning. Nothing sits in a bag for a week before it reaches your tray.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section location" id="visit">
+  <div class="wrap loc-grid reveal">
+    <div>
+      <span class="tag" style="color:var(--mustard)">Visit Us</span>
+      <h2 style="margin-bottom:24px;">Come get your hands dirty.</h2>
+      <div class="loc-row"><span>Address</span><span>412 Cobalt Street, Riverside District</span></div>
+      <div class="loc-row"><span>Phone</span><span>(555) 014-2299</span></div>
+      <div class="loc-row"><span>Mon–Thu</span><span>11:00 AM – 10:00 PM</span></div>
+      <div class="loc-row"><span>Fri–Sat</span><span>11:00 AM – 12:00 AM</span></div>
+      <div class="loc-row"><span>Sunday</span><span>12:00 PM – 9:00 PM</span></div>
+    </div>
+    <div class="map-block">Map Preview Placeholder</div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="footer-top">
+      <h2>Hungry yet?</h2>
+      <a href="order.html" class="btn btn-ghost order-trigger" style="border-color:var(--cream);">Order Now</a>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Bun & Blaze. All rights reserved.</span>
+      <span>Sample project built for demonstration purposes.</span>
+    </div>
+  </div>
+</footer>
+
+<button class="to-top" id="toTop" aria-label="Scroll to top">↑</button>
+
+<script>
+  // Nav scrolled state + scroll-top button
+  const nav = document.querySelector('nav');
+  const toTop = document.getElementById('toTop');
+  window.addEventListener('scroll', () => {
+    const y = window.scrollY;
+    nav.classList.toggle('scrolled', y > 30);
+    toTop.classList.toggle('show', y > 500);
+  }, { passive: true });
+  // Scroll to top on page load
+  window.addEventListener('load', () => {
+    window.scrollTo(0, 0);
+  });
+
+  // Scroll reveal via IntersectionObserver
+  const revealEls = document.querySelectorAll('.reveal, .reveal-stagger');
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('in');
+        io.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.15 });
+  revealEls.forEach(el => io.observe(el));
+
+  // Animated counters
+  const counters = document.querySelectorAll('.stat .num');
+  const animateCount = (el) => {
+    const target = parseInt(el.dataset.target, 10);
+    const duration = 1400;
+    const start = performance.now();
+    const isMillions = target > 100000;
+    function step(now) {
+      const progress = Math.min((now - start) / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      const val = Math.floor(eased * target);
+      el.textContent = isMillions ? (val / 1000000).toFixed(val === target ? 1 : 2) + 'M+' : val + (target === 48 ? '' : (target === 5 ? ' min' : '+'));
+      if (progress < 1) requestAnimationFrame(step);
+      else el.textContent = isMillions ? (target/1000000) + 'M+' : (target === 48 ? '4.8★' : target === 5 ? '5 min' : target + '+');
+    }
+    requestAnimationFrame(step);
+  };
+  const statIO = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        counters.forEach(animateCount);
+        statIO.disconnect();
+      }
+    });
+  }, { threshold: 0.3 });
+  const statsStrip = document.getElementById('statsStrip');
+  if (statsStrip) statIO.observe(statsStrip);
+
+  // Steam particles rising from burger
+  const steamHost = document.getElementById('steamHost');
+  if (steamHost && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    function spawnSteam() {
+      const p = document.createElement('div');
+      p.className = 'steam';
+      p.style.left = (50 + (Math.random() * 16 - 8)) + '%';
+      p.style.animation = `rise ${2.8 + Math.random()*1.2}s ease-out forwards`;
+      steamHost.appendChild(p);
+      setTimeout(() => p.remove(), 4200);
+    }
+    setInterval(spawnSteam, 900);
+    spawnSteam();
+  }
+
+  // Subtle tilt on menu cards following cursor
+  document.querySelectorAll('.menu-card').forEach(card => {
+    card.addEventListener('mousemove', (e) => {
+      const r = card.getBoundingClientRect();
+      const x = (e.clientX - r.left) / r.width - 0.5;
+      const y = (e.clientY - r.top) / r.height - 0.5;
+      card.style.transform = `translateY(-6px) rotateX(${y * -6}deg) rotateY(${x * 6}deg)`;
+    });
+    card.addEventListener('mouseleave', () => { card.style.transform = ''; });
+  });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Order - Bun &amp; Blaze</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Archivo:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --red: #C8102E;
+      --mustard: #F2B705;
+      --char: #1C1C1C;
+      --cream: #FFF8E7;
+      --brown: #3B2A22;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Archivo', sans-serif;
+      background: var(--cream);
+      color: var(--char);
+      padding: 0;
+    }
+    /* NAV */
+    .top-bar {
+      background: var(--char);
+      border-bottom: 4px solid var(--mustard);
+      padding: 14px 28px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .top-bar .logo {
+      color: var(--cream);
+      font-family: 'Archivo Black', sans-serif;
+      font-size: 20px;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex: 1;
+    }
+    .btn {
+      display: inline-block;
+      padding: 10px 20px;
+      background: var(--red);
+      color: var(--cream);
+      text-decoration: none;
+      border-radius: 4px;
+      font-weight: 700;
+      font-size: 14px;
+      border: none;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn:hover { background: var(--mustard); color: var(--char); }
+    .btn-outline {
+      background: transparent;
+      border: 2px solid var(--cream);
+      color: var(--cream);
+    }
+    .btn-outline:hover { background: var(--cream); color: var(--char); }
+
+    /* WRAP */
+    .wrap { max-width: 1000px; margin: 0 auto; padding: 40px 28px; }
+    h1 {
+      font-family: 'Archivo Black', sans-serif;
+      color: var(--red);
+      font-size: 36px;
+      margin-bottom: 24px;
+    }
+
+    /* TABLE */
+    table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+    th, td { padding: 12px 16px; border-bottom: 1px solid #ddd; text-align: left; }
+    th { background: var(--mustard); color: var(--char); font-family: 'Archivo Black', sans-serif; }
+    tr:hover td { background: rgba(242,183,5,0.08); }
+    input[type=number] {
+      width: 70px;
+      padding: 6px 8px;
+      border: 2px solid #ddd;
+      border-radius: 4px;
+      font-size: 15px;
+    }
+    input[type=number]:focus { border-color: var(--red); outline: none; }
+
+    /* TOTAL */
+    .total-bar {
+      background: var(--char);
+      color: var(--cream);
+      padding: 16px 20px;
+      border-radius: 6px;
+      font-family: 'Archivo Black', sans-serif;
+      font-size: 20px;
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    /* ACTIONS */
+    .actions { display: flex; gap: 12px; flex-wrap: wrap; }
+
+    /* CART SIDEBAR */
+    #cartSidebar {
+      position: fixed;
+      top: 0; right: -320px;
+      width: 300px;
+      height: 100vh;
+      background: var(--char);
+      color: var(--cream);
+      padding: 20px;
+      transition: right 0.3s ease;
+      z-index: 200;
+      overflow-y: auto;
+    }
+    body.cart-open #cartSidebar { right: 0; }
+    #cartSidebar h2 { color: var(--mustard); margin-bottom: 16px; }
+    .cart-item { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #333; font-size: 14px; }
+    .cart-total-line { font-weight: 700; margin-top: 14px; font-size: 16px; color: var(--mustard); }
+
+    /* DARK MODE */
+    body.dark { background: #1a1a1a; color: var(--cream); }
+    body.dark table { color: var(--cream); }
+    body.dark th { background: var(--brown); }
+    body.dark td { border-color: #333; }
+    body.dark tr:hover td { background: rgba(255,255,255,0.05); }
+    body.dark input[type=number] { background: #2a2a2a; color: var(--cream); border-color: #444; }
+  </style>
+</head>
+<body>
+
+<div class="top-bar">
+  <a href="bun-and-blaze.html" class="logo">🔥 BUN &amp; BLAZE</a>
+  <button id="backBtn" class="btn btn-outline">← Back</button>
+  <button id="themeToggle" class="btn btn-outline">🌙 Theme</button>
+  <button id="cartToggle" class="btn btn-outline">🛒 Cart</button>
+</div>
+
+<div class="wrap">
+  <h1>Place Your Order</h1>
+  <table id="orderTable">
+    <thead>
+      <tr><th>Item</th><th>Price</th><th>Quantity</th></tr>
+    </thead>
+    <tbody id="orderBody"></tbody>
+  </table>
+
+  <div class="total-bar">
+    <span>Total (incl. 7% tax)</span>
+    <span>$<span id="totalAmount">0.00</span></span>
+  </div>
+
+  <div class="actions">
+    <button id="confirmBtn" class="btn">✅ Confirm Order</button>
+    <a href="bun-and-blaze.html" class="btn btn-outline">🏠 Home</a>
+  </div>
+</div>
+
+<div id="cartSidebar">
+  <h2>🛒 Cart</h2>
+  <div id="cartItems"></div>
+  <div class="cart-total-line">Total: $<span id="cartTotal">0.00</span></div>
+  <br>
+  <button onclick="document.body.classList.remove('cart-open')" class="btn" style="width:100%">Close</button>
+</div>
+
+<script src="order.js"></script>
+</body>
+</html>

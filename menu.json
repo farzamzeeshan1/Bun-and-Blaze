@@ -1,0 +1,258 @@
+[
+  {
+    "id": "cheezious_original",
+    "name": "Cheezious Chicken",
+    "description": "Crispy chicken fillet with melted cheese",
+    "price": 5.99,
+    "image": "./burger.png",
+    "category": "Burgers"
+  },
+  {
+    "id": "cheezious_bacon",
+    "name": "Cheezious Bacon",
+    "description": "Cheezious with crispy bacon strips",
+    "price": 6.99,
+    "image": "./burger.png",
+    "category": "Burgers"
+  },
+  {
+    "id": "spicy_zinger",
+    "name": "Spicy Zinger Burger",
+    "description": "Spicy chicken patty with fresh lettuce",
+    "price": 7.99,
+    "image": "./burger.png",
+    "category": "Burgers"
+  },
+  {
+    "id": "popcorn_chicken",
+    "name": "Popcorn Chicken (6 pcs)",
+    "description": "Golden popcorn‑style chicken bites",
+    "price": 4.99,
+    "image": "./side.png",
+    "category": "Sides"
+  },
+  {
+    "id": "bbq_wings",
+    "name": "BBQ Chicken Wings",
+    "description": "8 pieces of smoky BBQ wings",
+    "price": 8.49,
+    "image": "./side.png",
+    "category": "Sides"
+  },
+  {
+    "id": "loaded_fries",
+    "name": "Loaded Fries",
+    "description": "Fries topped with cheese and bacon",
+    "price": 3.49,
+    "image": "./side.png",
+    "category": "Sides"
+  },
+  {
+    "id": "soft_drink",
+    "name": "Soft Drink",
+    "description": "Choice of cola, sprite or fanta",
+    "price": 1.99,
+    "image": "./drink.png",
+    "category": "Drinks"
+  },
+  {
+    "id": "original_smash",
+    "name": "The Original Smash",
+    "description": "Signature beef smash burger",
+    "price": 5.99,
+    "image": "./burger.png",
+    "category": "Burgers"
+  },
+  {
+    "id": "double_blaze",
+    "name": "Double Blaze",
+    "description": "Two‑patty double cheese burger",
+    "price": 8.49,
+    "image": "./burger.png",
+    "category": "Burgers"
+  },
+  {
+    "id": "spicy_ember",
+    "name": "Spicy Ember",
+    "description": "Spicy grilled chicken sandwich",
+    "price": 6.99,
+    "image": "./burger.png",
+    "category": "Burgers"
+  },
+  {
+    "id": "crispy_chick",
+    "name": "Crispy Chick",
+    "description": "Crispy fried chicken piece",
+    "price": 7.49,
+    "image": "./side.png",
+    "category": "Sides"
+  },
+  {
+    "id": "blaze_fries",
+    "name": "Blaze Fries",
+    "description": "Seasoned classic fries",
+    "price": 3.49,
+    "image": "./side.png",
+    "category": "Sides"
+  },
+  {
+    "id": "salted_caramel_shake",
+    "name": "Salted Caramel Shake",
+    "description": "Rich caramel milkshake with a pinch of sea salt",
+    "price": 4.99,
+    "image": "./shake.png",
+    "category": "Shakes"
+  },
+  {
+    "id": "chicken_nuggets",
+    "name": "Chicken Nuggets (10 pcs)",
+    "description": "Golden fried chicken nuggets",
+    "price": 5.49,
+    "image": "./side.png",
+    "category": "Sides"
+  },
+  {
+    "id": "veggie_burger",
+    "name": "Veggie Deluxe Burger",
+    "description": "Grilled veggie patty with fresh veggies",
+    "price": 6.79,
+    "image": "./burger.png",
+    "category": "Burgers"
+  },
+  {
+    "id": "chocolate_milkshake",
+    "name": "Chocolate Milkshake",
+    "description": "Creamy chocolate shake",
+    "price": 4.49,
+    "image": "./shake.png",
+    "category": "Shakes"
+  },
+  {
+    "id": "strawberry_milkshake",
+    "name": "Strawberry Milkshake",
+    "description": "Fresh strawberry shake",
+    "price": 4.49,
+    "image": "./shake.png",
+    "category": "Shakes"
+  },
+  {
+    "id": "mac_and_cheese",
+    "name": "Mac & Cheese",
+    "description": "Creamy macaroni cheese",
+    "price": 4.99,
+    "image": "./side.png",
+    "category": "Sides"
+  },
+  {
+    "id": "fish_and_chips",
+    "name": "Fish & Chips",
+    "description": "Crispy battered fish with fries",
+    "price": 7.99,
+    "image": "./side.png",
+    "category": "Sides"
+  },
+  {
+    "id": "onion_rings",
+    "name": "Onion Rings",
+    "description": "Crispy onion rings",
+    "price": 2.99,
+    "image": "./side.png",
+    "category": "Sides"
+  },
+  {
+    "id": "coke",
+    "name": "Coke",
+    "description": "Classic Coca‑Cola",
+    "price": 1.79,
+    "image": "./drink.png",
+    "category": "Drinks"
+  },
+  {
+    "id": "sprite",
+    "name": "Sprite",
+    "description": "Lemon‑lime soft drink",
+    "price": 1.79,
+    "image": "./drink.png",
+    "category": "Drinks"
+  },
+  {
+    "id": "fanta",
+    "name": "Fanta",
+    "description": "Orange flavored soda",
+    "price": 1.79,
+    "image": "./drink.png",
+    "category": "Drinks"
+  },
+  {
+    "id": "ice_cream_cone",
+    "name": "Ice Cream Cone",
+    "description": "Vanilla ice cream in a cone",
+    "price": 2.49,
+    "image": "./dessert.png",
+    "category": "Desserts"
+  },
+  {
+    "id": "chocolate_mousse",
+    "name": "Chocolate Mousse",
+    "description": "Rich chocolate dessert",
+    "price": 3.49,
+    "image": "./dessert.png",
+    "category": "Desserts"
+  },
+  {
+    "id": "apple_pie",
+    "name": "Apple Pie",
+    "description": "Warm apple pie slice",
+    "price": 3.99,
+    "image": "./dessert.png",
+    "category": "Desserts"
+  },
+  {
+    "id": "garden_salad",
+    "name": "Garden Salad",
+    "description": "Fresh mixed greens with vinaigrette",
+    "price": 4.29,
+    "image": "./salad.png",
+    "category": "Salads"
+  },
+  {
+    "id": "caesar_salad",
+    "name": "Caesar Salad",
+    "description": "Romaine, parmesan, croutons, Caesar dressing",
+    "price": 4.99,
+    "image": "./salad.png",
+    "category": "Salads"
+  },
+  {
+    "id": "grilled_chicken_sandwich",
+    "name": "Grilled Chicken Sandwich",
+    "description": "Grilled chicken breast with lettuce and mayo",
+    "price": 6.49,
+    "image": "./burger.png",
+    "category": "Sandwiches"
+  },
+  {
+    "id": "bbq_pulled_pork_sandwich",
+    "name": "BBQ Pulled Pork Sandwich",
+    "description": "Slow‑cooked pulled pork with BBQ sauce",
+    "price": 7.49,
+    "image": "./burger.png",
+    "category": "Sandwiches"
+  },
+  {
+    "id": "cheese_sticks",
+    "name": "Cheese Sticks",
+    "description": "Fried mozzarella sticks",
+    "price": 3.79,
+    "image": "./side.png",
+    "category": "Sides"
+  },
+  {
+    "id": "chili_cheese_fries",
+    "name": "Chili Cheese Fries",
+    "description": "Fries topped with chili and melted cheese",
+    "price": 4.59,
+    "image": "./side.png",
+    "category": "Sides"
+  }
+]

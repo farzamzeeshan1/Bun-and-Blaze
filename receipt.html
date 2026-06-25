@@ -190,10 +190,10 @@
     // No order data — redirect to home
     document.querySelector('.receipt-card').innerHTML = `
       <div class="no-order">
-        <h2>Koi order nahi mila.</h2>
-        <p>Pehle order place karein.</p>
+        <h2>No order found.</h2>
+        <p>Please place an order first.</p>
         <br>
-        <a href="order.html" class="btn" style="margin-top:16px;">Order Karo</a>
+        <a href="order.html" class="btn" style="margin-top:16px;">Place an Order</a>
       </div>`;
   } else {
     // Timestamp
@@ -226,9 +226,9 @@
         <div class="row"><span>Tax (7%)</span><span>$${orderData.tax.toFixed(2)}</span></div>
         <div class="row grand"><span>Grand Total</span><span>$${orderData.total.toFixed(2)}</span></div>
       </div>
-      <div class="thank-you">🙏 Shukriya! Aapka order place ho gaya hai.</div>
+      <div class="thank-you">🙏 Thank you! Your order has been placed.</div>
       <div class="actions">
-        <a href="bun-and-blaze.html" class="btn">🏠 Home par Jao</a>
+        <a href="bun-and-blaze.html" class="btn">🏠 Go Home</a>
         <a href="order.html" class="btn" style="background:#444;">New Order</a>
         <button onclick="window.print()" class="btn" style="background:#2a7a2a;">🖨 Print</button>
       </div>`;

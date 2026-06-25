@@ -78,6 +78,12 @@ window.addEventListener('DOMContentLoaded', () => {
     return 'Other';
   }
 
+  // ── Fallback image per category (used if the remote photo fails to load) ──
+  const fallbackImg = {
+    Burgers: 'burger.png', Sides: 'side.png', Shakes: 'shake.png',
+    Drinks: 'drink.png', Salads: 'salad.png', Desserts: 'dessert.png', Other: 'burger.png'
+  };
+
   // ── Fetch and render menu ──────────────────────────────────
   fetch('menu.json')
     .then(r => r.json())
@@ -106,7 +112,7 @@ window.addEventListener('DOMContentLoaded', () => {
           const card = document.createElement('div');
           card.className = 'card';
           card.innerHTML = `
-            <img src="${item.image}" alt="${item.name}" onerror="this.style.display='none'"/>
+            <img src="${item.image}" alt="${item.name}" data-fallback="${fallbackImg[cat] || 'burger.png'}" onerror="this.onerror=null;this.src=this.dataset.fallback;"/>
             <div class="card-body">
               <h3>${item.name}</h3>
               <p>${item.description || ''}</p>
@@ -125,7 +131,7 @@ window.addEventListener('DOMContentLoaded', () => {
     })
     .catch(err => {
       console.error('Failed to load menu.json:', err);
-      container.innerHTML = '<p style="color:red;padding:20px;">Menu load nahi ho saka. menu.json check karein.</p>';
+      container.innerHTML = '<p style="color:red;padding:20px;">Couldn\'t load the menu. Please check menu.json.</p>';
     });
 
   // ── Confirm order from cart ──────────────────────────────────
@@ -134,7 +140,7 @@ window.addEventListener('DOMContentLoaded', () => {
     confirmCartBtn.addEventListener('click', () => {
       const cart = JSON.parse(sessionStorage.getItem('cart') || '[]');
       if (cart.length === 0) {
-        alert('Cart khali hai! Pehle kuch add karein.');
+        alert('Your cart is empty! Add something first.');
         return;
       }
       

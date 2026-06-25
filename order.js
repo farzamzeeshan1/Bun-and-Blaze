@@ -48,7 +48,12 @@ window.addEventListener('DOMContentLoaded', () => {
         input.value  = cartItem ? cartItem.qty.toString() : '0';
         
         input.className = 'qty';
-        input.addEventListener('input', () => { updateTotal(); updateCart(); });
+        input.addEventListener('input', () => {
+          let v = parseInt(input.value, 10);
+          if (isNaN(v) || v < 0) v = 0;
+          input.value = v;
+          updateTotal(); updateCart();
+        });
         qtyTd.appendChild(input);
 
         tr.appendChild(nameTd);
@@ -132,7 +137,7 @@ window.addEventListener('DOMContentLoaded', () => {
     });
 
     if (items.length === 0) {
-      alert('Koi item select nahi kiya! Pehle kuch select karein.');
+      alert('No items selected! Please choose something first.');
       return;
     }
 

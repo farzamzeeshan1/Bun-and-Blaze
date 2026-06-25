@@ -21,11 +21,25 @@ window.addEventListener('DOMContentLoaded', () => {
     if (cart.length === 0) {
       cartItems.innerHTML = '<li style="color:#888;font-size:13px;">Cart is empty.</li>';
     } else {
-      cartItems.innerHTML = cart
-        .map(i => `<li style="padding:6px 0;border-bottom:1px solid #333;">
-          ${i.name} × ${i.qty} — $${(i.price * i.qty).toFixed(2)}
-        </li>`)
-        .join('');
+      cartItems.innerHTML = '';
+      cart.forEach((i, index) => {
+        const li = document.createElement('li');
+        li.style.cssText = 'padding:8px 0; border-bottom:1px solid #333; display:flex; justify-content:space-between; align-items:center;';
+        li.innerHTML = `
+          <span>${i.name} × ${i.qty} — $${(i.price * i.qty).toFixed(2)}</span>
+          <button class="remove-btn" data-index="${index}" style="background:var(--red); color:white; border:none; padding:4px 8px; border-radius:4px; cursor:pointer; font-size:12px;">X</button>
+        `;
+        cartItems.appendChild(li);
+      });
+      // Attach remove event listeners
+      cartItems.querySelectorAll('.remove-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const idx = parseInt(e.target.dataset.index, 10);
+          cart.splice(idx, 1);
+          sessionStorage.setItem('cart', JSON.stringify(cart));
+          renderCart();
+        });
+      });
     }
     const sum = cart.reduce((s, i) => s + i.price * i.qty, 0);
     cartTotalEl.textContent = sum.toFixed(2);
@@ -113,4 +127,28 @@ window.addEventListener('DOMContentLoaded', () => {
       console.error('Failed to load menu.json:', err);
       container.innerHTML = '<p style="color:red;padding:20px;">Menu load nahi ho saka. menu.json check karein.</p>';
     });
+
+  // ── Confirm order from cart ──────────────────────────────────
+  const confirmCartBtn = document.getElementById('confirmCartBtn');
+  if (confirmCartBtn) {
+    confirmCartBtn.addEventListener('click', () => {
+      const cart = JSON.parse(sessionStorage.getItem('cart') || '[]');
+      if (cart.length === 0) {
+        alert('Cart khali hai! Pehle kuch add karein.');
+        return;
+      }
+      
+      const subtotal = cart.reduce((s, i) => s + i.price * i.qty, 0);
+      const tax      = subtotal * 0.07;
+      const total    = subtotal + tax;
+
+      sessionStorage.setItem('orderData', JSON.stringify({
+        items: cart, subtotal, tax, total,
+        timestamp: new Date().toISOString()
+      }));
+
+      // Go to receipt page
+      window.location.href = 'receipt.html';
+    });
+  }
 });

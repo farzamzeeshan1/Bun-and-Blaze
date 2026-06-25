@@ -87,19 +87,37 @@ window.addEventListener('DOMContentLoaded', () => {
         const price = parseFloat(row.dataset.price);
         sum += price * qty;
         newCart.push({ name, price, qty });
-        html += `<div class="cart-item">
-          <span>${name} × ${qty}</span>
-          <span>$${(price * qty).toFixed(2)}</span>
+        html += `<div class="cart-item" style="display:flex; justify-content:space-between; align-items:center;">
+          <div>
+            <span>${name} × ${qty}</span><br>
+            <span style="color:#888; font-size:12px;">$${(price * qty).toFixed(2)}</span>
+          </div>
+          <button class="remove-btn" data-name="${name}" style="background:var(--red); color:white; border:none; padding:4px 8px; border-radius:4px; cursor:pointer; font-size:12px;">X</button>
         </div>`;
       }
     });
     sessionStorage.setItem('cart', JSON.stringify(newCart));
     cartItems.innerHTML = html || '<p style="color:#888;font-size:13px;">No items selected.</p>';
     cartTotalEl.textContent = sum.toFixed(2);
+
+    // Attach remove event listeners
+    cartItems.querySelectorAll('.remove-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const targetName = e.target.dataset.name;
+        // Find the corresponding row in the table and set qty to 0
+        rows.forEach(row => {
+          if (row.cells[0].textContent.trim() === targetName) {
+            row.querySelector('.qty').value = '0';
+          }
+        });
+        updateTotal();
+        updateCart();
+      });
+    });
   }
 
-  // ── Confirm order ─────────────────────────────────────────
-  confirmBtn.addEventListener('click', () => {
+  // ── Process Order Logic ─────────────────────────────────
+  function processOrder() {
     const rows  = orderBody.querySelectorAll('tr');
     const items = [];
     rows.forEach(row => {
@@ -129,5 +147,13 @@ window.addEventListener('DOMContentLoaded', () => {
 
     // Go to receipt page
     window.location.href = 'receipt.html';
-  });
+  }
+
+  // ── Confirm order ─────────────────────────────────────────
+  confirmBtn.addEventListener('click', processOrder);
+  
+  // ── Confirm order from cart ─────────────────────────────────
+  const confirmCartBtn = document.getElementById('confirmCartBtn');
+  if (confirmCartBtn) confirmCartBtn.addEventListener('click', processOrder);
+
 });

@@ -110,6 +110,34 @@
     }
     .card-body p { font-size: 13px; color: #666; line-height: 1.5; margin-bottom: 14px; min-height: 40px; }
     .card-footer { display: flex; justify-content: space-between; align-items: center; }
+    .qty-row { display: flex; justify-content: flex-start; margin-bottom: 12px; }
+    .qty-stepper {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      border: 2px solid var(--char);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+    .qty-btn {
+      background: var(--cream);
+      border: none;
+      width: 30px;
+      height: 30px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      color: var(--char);
+      transition: background 0.15s;
+    }
+    .qty-btn:hover { background: var(--mustard); }
+    .qty-val {
+      min-width: 32px;
+      text-align: center;
+      font-weight: 700;
+      font-size: 14px;
+      user-select: none;
+    }
     .price {
       font-family: 'Archivo Black', sans-serif;
       font-size: 20px;

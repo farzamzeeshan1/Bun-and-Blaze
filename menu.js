@@ -46,13 +46,14 @@ window.addEventListener('DOMContentLoaded', () => {
   }
 
   // ── Add to cart ────────────────────────────────────────────
-  function addToCart(item) {
+  function addToCart(item, qty) {
+    qty = qty || 1;
     const cart     = JSON.parse(sessionStorage.getItem('cart') || '[]');
     const existing = cart.find(i => i.name === item.name);
     if (existing) {
-      existing.qty += 1;
+      existing.qty += qty;
     } else {
-      cart.push({ name: item.name, price: item.price, qty: 1 });
+      cart.push({ name: item.name, price: item.price, qty });
     }
     sessionStorage.setItem('cart', JSON.stringify(cart));
     renderCart();
@@ -60,8 +61,9 @@ window.addEventListener('DOMContentLoaded', () => {
     // Brief flash on button
     const btn = document.querySelector(`[data-cart-name="${item.name}"]`);
     if (btn) {
+      const label = btn.textContent;
       btn.textContent = '✓ Added!';
-      setTimeout(() => { btn.textContent = '+ Add to Cart'; }, 1200);
+      setTimeout(() => { btn.textContent = label; }, 1200);
     }
   }
 
@@ -116,13 +118,33 @@ window.addEventListener('DOMContentLoaded', () => {
             <div class="card-body">
               <h3>${item.name}</h3>
               <p>${item.description || ''}</p>
+              <div class="qty-row">
+                <div class="qty-stepper">
+                  <button type="button" class="qty-btn qty-minus" aria-label="Decrease quantity">−</button>
+                  <span class="qty-val" data-qty-name="${item.name}">1</span>
+                  <button type="button" class="qty-btn qty-plus" aria-label="Increase quantity">+</button>
+                </div>
+              </div>
               <div class="card-footer">
                 <span class="price">$${item.price.toFixed(2)}</span>
                 <button class="add-btn" data-cart-name="${item.name}">+ Add to Cart</button>
               </div>
             </div>
           `;
-          card.querySelector('.add-btn').addEventListener('click', () => addToCart(item));
+          const qtyValEl = card.querySelector('.qty-val');
+          card.querySelector('.qty-minus').addEventListener('click', () => {
+            const v = Math.max(1, parseInt(qtyValEl.textContent, 10) - 1);
+            qtyValEl.textContent = v;
+          });
+          card.querySelector('.qty-plus').addEventListener('click', () => {
+            const v = Math.min(99, parseInt(qtyValEl.textContent, 10) + 1);
+            qtyValEl.textContent = v;
+          });
+          card.querySelector('.add-btn').addEventListener('click', () => {
+            const qty = parseInt(qtyValEl.textContent, 10) || 1;
+            addToCart(item, qty);
+            qtyValEl.textContent = '1';
+          });
           grid.appendChild(card);
         });
       });

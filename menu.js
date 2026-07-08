@@ -165,18 +165,22 @@ window.addEventListener('DOMContentLoaded', () => {
         alert('Your cart is empty! Add something first.');
         return;
       }
-      
-      const subtotal = cart.reduce((s, i) => s + i.price * i.qty, 0);
-      const tax      = subtotal * 0.07;
-      const total    = subtotal + tax;
 
-      sessionStorage.setItem('orderData', JSON.stringify({
-        items: cart, subtotal, tax, total,
-        timestamp: new Date().toISOString()
-      }));
+      // Require sign-in so the order can be attached to a customer
+      // and appear in their order history.
+      window.BB.requireAuth(() => {
+        const subtotal = cart.reduce((s, i) => s + i.price * i.qty, 0);
+        const tax      = subtotal * 0.07;
+        const total    = subtotal + tax;
 
-      // Go to receipt page
-      window.location.href = 'receipt.html';
+        const record = window.BB.saveOrder({ items: cart, subtotal, tax, total });
+
+        sessionStorage.setItem('orderData', JSON.stringify(record));
+        sessionStorage.removeItem('cart');
+
+        // Go to receipt page
+        window.location.href = 'receipt.html';
+      });
     });
   }
 });

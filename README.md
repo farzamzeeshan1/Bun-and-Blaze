@@ -23,6 +23,17 @@ Bun & Blaze is a concept brand built around the idea of fast food that doesn't f
 - **Scroll-to-top button** with fade-in on scroll
 - **Fully responsive** — desktop, tablet, and mobile breakpoints
 - **Accessibility-conscious** — visible keyboard focus states, and full `prefers-reduced-motion` support to disable animation for users who need it
+- **Sign in with Google (or email)** — real Google Identity Services integration, with an email fallback so it works without any setup
+- **Per-customer order history** — every confirmed order is saved to the signed-in customer's account and viewable on the "My Account" page, with order tracking, reorder, and loyalty points
+- **Live order tracker** on the receipt page (animated "Received → Kitchen → Grill → Ready" progress) and a social-proof activity ticker on the homepage
+
+## Accounts & Order History — how it actually works
+
+This is a static front-end site with no server or database, so "accounts" work like this:
+
+- **Sign-in** uses real [Google Identity Services](https://developers.google.com/identity/gsi/web) — no fake OAuth. To turn it on, create a free OAuth Client ID in the [Google Cloud Console](https://console.cloud.google.com/apis/credentials), add your deployed URL under "Authorized JavaScript origins," and paste the Client ID into `GOOGLE_CLIENT_ID` at the top of `account.js`. Until you do that, the Google button is skipped automatically and visitors sign in with just a name + email instead — the rest of the app works identically either way.
+- **Order history is stored in the browser** (`localStorage`), namespaced by the signed-in email. That means it persists across visits *on the same browser/device*, which is enough to demo a real "My Orders" experience — but it is **not** a real multi-device account system, since there's no backend to sync data between devices. A production version would replace the `localStorage` calls in `account.js` with requests to a real backend (Firebase, Supabase, your own API, etc.) and verify the Google ID token server-side instead of decoding it client-side.
+- Files involved: `account.js` (shared auth widget, sign-in modal, order storage), `account.html` (My Account / order history page). Every page includes `account.js` and has an `#authWidget` slot in its nav.
 
 ## Tech Stack
 

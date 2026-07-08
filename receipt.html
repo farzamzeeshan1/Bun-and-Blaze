@@ -159,12 +159,52 @@
       color: #888;
     }
     .no-order h2 { font-size: 24px; margin-bottom: 12px; color: var(--char); }
+
+    .order-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      background: var(--cream);
+      border: 2px dashed var(--mustard);
+      border-radius: 8px;
+      padding: 12px 16px;
+      margin-bottom: 20px;
+      font-size: 14px;
+    }
+    .order-meta .oid { font-family: 'Archivo Black', sans-serif; color: var(--red); }
+    .status-badge {
+      display: inline-block;
+      background: #2a7a2a;
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border-radius: 20px;
+      letter-spacing: 0.03em;
+    }
+    .tracker {
+      background: var(--char);
+      color: var(--cream);
+      border-radius: 8px;
+      padding: 18px 20px;
+      margin-bottom: 20px;
+    }
+    .tracker .eta-label { font-size: 12px; text-transform: uppercase; color: #aaa; letter-spacing: 0.05em; }
+    .tracker .eta-time { font-family: 'Archivo Black', sans-serif; font-size: 26px; color: var(--mustard); margin: 4px 0 10px; }
+    .tracker-bar { height: 8px; background: #333; border-radius: 6px; overflow: hidden; }
+    .tracker-bar-fill { height: 100%; background: linear-gradient(90deg, var(--red), var(--mustard)); width: 4%; transition: width 1s linear; }
+    .tracker-steps { display: flex; justify-content: space-between; font-size: 11px; color: #999; margin-top: 8px; text-transform: uppercase; letter-spacing: 0.03em; }
+    .tracker-steps span.active { color: var(--mustard); font-weight: 700; }
   </style>
 </head>
 <body>
 
 <div class="top-bar">
   <a href="bun-and-blaze.html" class="logo">🔥 BUN &amp; BLAZE</a>
+  <div id="authWidget"></div>
   <a href="bun-and-blaze.html" class="btn btn-outline">🏠 Home</a>
   <a href="order.html" class="btn btn-outline">New Order</a>
 </div>
@@ -183,8 +223,10 @@
   </div>
 </div>
 
+<script src="account.js"></script>
 <script>
   const orderData = JSON.parse(sessionStorage.getItem('orderData') || 'null');
+  const session   = window.BB ? window.BB.getSession() : null;
 
   if (!orderData || !orderData.items || orderData.items.length === 0) {
     // No order data — redirect to home
@@ -214,7 +256,34 @@
       </tr>`;
     });
 
+    const eta = orderData.eta || 15;
+    const readyBy = new Date(ts.getTime() + eta * 60000);
+    const readyByStr = readyBy.toLocaleTimeString('en-PK', { hour: '2-digit', minute: '2-digit' });
+    function escapeHTML(s) {
+      return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+      }[c]));
+    }
+    const greeting = session ? `Thanks, ${escapeHTML(session.name.split(' ')[0])}! ` : 'Thank you! ';
+
     document.getElementById('receiptContent').innerHTML = `
+      <div class="order-meta">
+        <div>Order <span class="oid">#${orderData.id || 'BB-00000'}</span></div>
+        <span class="status-badge">${orderData.status || 'Confirmed'}</span>
+      </div>
+
+      <div class="tracker">
+        <div class="eta-label">Estimated ready by</div>
+        <div class="eta-time">${readyByStr} <span style="font-size:14px;color:#aaa;font-family:'Archivo';">(~<span id="etaMins">${eta}</span> min)</span></div>
+        <div class="tracker-bar"><div class="tracker-bar-fill" id="trackerFill"></div></div>
+        <div class="tracker-steps">
+          <span class="active" id="stepReceived">Received</span>
+          <span id="stepKitchen">In the Kitchen</span>
+          <span id="stepGrill">On the Grill</span>
+          <span id="stepReady">Ready</span>
+        </div>
+      </div>
+
       <table>
         <thead>
           <tr><th>Item</th><th>Qty</th><th>Price</th><th>Total</th></tr>
@@ -226,12 +295,27 @@
         <div class="row"><span>Tax (7%)</span><span>$${orderData.tax.toFixed(2)}</span></div>
         <div class="row grand"><span>Grand Total</span><span>$${orderData.total.toFixed(2)}</span></div>
       </div>
-      <div class="thank-you">🙏 Thank you! Your order has been placed.</div>
+      <div class="thank-you">🙏 ${greeting}Your order has been placed.</div>
       <div class="actions">
         <a href="bun-and-blaze.html" class="btn">🏠 Go Home</a>
         <a href="order.html" class="btn" style="background:#444;">New Order</a>
+        <a href="account.html" class="btn" style="background:#1D5C9E;">📋 My Orders</a>
         <button onclick="window.print()" class="btn" style="background:#2a7a2a;">🖨 Print</button>
       </div>`;
+
+    // Fake live progress animation for the order tracker
+    (function animateTracker() {
+      const fill = document.getElementById('trackerFill');
+      const steps = ['stepReceived', 'stepKitchen', 'stepGrill', 'stepReady'];
+      let step = 0;
+      fill.style.width = '4%';
+      const timer = setInterval(() => {
+        step++;
+        if (step >= steps.length) { clearInterval(timer); return; }
+        document.getElementById(steps[step]).classList.add('active');
+        fill.style.width = `${(step / (steps.length - 1)) * 100}%`;
+      }, 3200);
+    })();
   }
 </script>
 </body>

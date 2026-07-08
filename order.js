@@ -141,14 +141,20 @@ window.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
+    // Require sign-in so the order can be attached to a customer
+    // and appear in their order history.
+    window.BB.requireAuth(() => finalizeOrder(items));
+  }
+
+  function finalizeOrder(items) {
     const subtotal = items.reduce((s, i) => s + i.price * i.qty, 0);
     const tax      = subtotal * 0.07;
     const total    = subtotal + tax;
 
-    sessionStorage.setItem('orderData', JSON.stringify({
-      items, subtotal, tax, total,
-      timestamp: new Date().toISOString()
-    }));
+    const record = window.BB.saveOrder({ items, subtotal, tax, total });
+
+    sessionStorage.setItem('orderData', JSON.stringify(record));
+    sessionStorage.removeItem('cart');
 
     // Go to receipt page
     window.location.href = 'receipt.html';

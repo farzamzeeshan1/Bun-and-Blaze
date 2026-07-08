@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Account - Bun &amp; Blaze</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Archivo:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --red: #C8102E;
+      --mustard: #F2B705;
+      --char: #1C1C1C;
+      --cream: #FFF8E7;
+      --brown: #3B2A22;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Archivo', sans-serif;
+      background: var(--cream);
+      color: var(--char);
+    }
+    .top-bar {
+      background: var(--char);
+      border-bottom: 4px solid var(--mustard);
+      padding: 14px 28px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+    .top-bar .logo {
+      color: var(--cream);
+      font-family: 'Archivo Black', sans-serif;
+      font-size: 20px;
+      text-decoration: none;
+      flex: 1;
+    }
+    .btn {
+      display: inline-block;
+      padding: 9px 18px;
+      background: var(--red);
+      color: var(--cream);
+      border: none;
+      border-radius: 4px;
+      font-weight: 700;
+      font-size: 14px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.2s;
+    }
+    .btn:hover { background: var(--mustard); color: var(--char); }
+    .btn-outline { background: transparent; border: 2px solid var(--cream); color: var(--cream); }
+    .btn-outline:hover { background: var(--cream); color: var(--char); }
+
+    .wrap { max-width: 900px; margin: 0 auto; padding: 40px 28px 80px; }
+    h1 { font-family: 'Archivo Black', sans-serif; color: var(--red); font-size: 34px; margin-bottom: 24px; }
+
+    /* Profile card */
+    .profile-card {
+      background: var(--char);
+      color: var(--cream);
+      border-radius: 12px;
+      padding: 26px 28px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      margin-bottom: 28px;
+      flex-wrap: wrap;
+    }
+    .profile-avatar {
+      width: 66px; height: 66px; border-radius: 50%; object-fit: cover;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Archivo Black', sans-serif; font-size: 24px; color: #fff; flex-shrink: 0;
+    }
+    .profile-info { flex: 1; min-width: 180px; }
+    .profile-info .name { font-family: 'Archivo Black', sans-serif; font-size: 20px; }
+    .profile-info .email { color: #aaa; font-size: 13px; margin-top: 2px; }
+    .profile-info .since { color: #777; font-size: 12px; margin-top: 4px; }
+    .profile-stats { display: flex; gap: 22px; }
+    .profile-stats .stat { text-align: center; }
+    .profile-stats .stat .n { font-family: 'Archivo Black', sans-serif; font-size: 22px; color: var(--mustard); }
+    .profile-stats .stat .l { font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: #999; margin-top: 2px; }
+
+    /* Order list */
+    .order-card {
+      background: #fff;
+      border: 2px solid #eee;
+      border-radius: 10px;
+      margin-bottom: 16px;
+      overflow: hidden;
+    }
+    .order-card-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 20px;
+      cursor: pointer;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .order-card-head:hover { background: rgba(242,183,5,0.06); }
+    .oc-left .oid { font-family: 'Archivo Black', sans-serif; color: var(--red); font-size: 15px; }
+    .oc-left .date { font-size: 12px; color: #888; margin-top: 2px; }
+    .oc-right { display: flex; align-items: center; gap: 14px; }
+    .oc-right .total { font-family: 'Archivo Black', sans-serif; font-size: 16px; }
+    .status-badge {
+      display: inline-block; background: #2a7a2a; color: #fff; font-size: 11px;
+      font-weight: 700; text-transform: uppercase; padding: 4px 10px; border-radius: 20px;
+    }
+    .chevron { transition: transform 0.2s; color: #999; }
+    .order-card.open .chevron { transform: rotate(180deg); }
+    .order-card-body {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.25s ease;
+      border-top: 1px solid #eee;
+    }
+    .order-card.open .order-card-body { max-height: 500px; }
+    .order-card-body-inner { padding: 16px 20px; }
+    .oc-item { display: flex; justify-content: space-between; font-size: 13px; padding: 5px 0; color: #444; }
+    .oc-totals { margin-top: 10px; padding-top: 10px; border-top: 1px dashed #ddd; font-size: 13px; }
+    .oc-totals .row { display: flex; justify-content: space-between; padding: 2px 0; }
+    .oc-actions { margin-top: 14px; display: flex; gap: 10px; flex-wrap: wrap; }
+    .oc-actions .btn { font-size: 12px; padding: 8px 14px; }
+
+    .empty-state, .signed-out {
+      text-align: center;
+      padding: 60px 24px;
+      background: #fff;
+      border: 2px dashed #ddd;
+      border-radius: 12px;
+      color: #777;
+    }
+    .empty-state h2, .signed-out h2 { color: var(--char); font-size: 22px; margin-bottom: 10px; }
+    .empty-state .btn, .signed-out .btn { margin-top: 16px; }
+  </style>
+</head>
+<body>
+
+<div class="top-bar">
+  <a href="bun-and-blaze.html" class="logo">🔥 BUN &amp; BLAZE</a>
+  <div id="authWidget"></div>
+  <a href="bun-and-blaze.html" class="btn btn-outline">🏠 Home</a>
+  <a href="order.html" class="btn">Order Now</a>
+</div>
+
+<div class="wrap">
+  <h1>My Account</h1>
+  <div id="accountContent"></div>
+</div>
+
+<script src="account.js"></script>
+<script>
+  function escapeHTML(s) {
+    return String(s == null ? "" : s).replace(/[&<>"']/g, c => ({
+      "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+    }[c]));
+  }
+  function initials(name) {
+    return (name || "?").trim().split(/\s+/).slice(0,2).map(w => w[0]).join("").toUpperCase();
+  }
+  function avatarColor(seed) {
+    const colors = ["#C8102E", "#F2B705", "#3B2A22", "#2a7a2a", "#1D5C9E", "#7A2A6D"];
+    let h = 0;
+    for (const ch of String(seed)) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
+    return colors[h % colors.length];
+  }
+
+  function render() {
+    const container = document.getElementById('accountContent');
+    const session = window.BB.getSession();
+
+    if (!session) {
+      container.innerHTML = `
+        <div class="signed-out">
+          <h2>You're not signed in</h2>
+          <p>Sign in to view your order history and profile.</p>
+          <button class="btn" id="signInPromptBtn">👤 Sign In</button>
+        </div>`;
+      document.getElementById('signInPromptBtn').addEventListener('click', () => {
+        window.BB.openSignIn(() => render());
+      });
+      return;
+    }
+
+    const orders = window.BB.getOrders();
+    const stats = window.BB.stats();
+    const since = new Date(session.since).toLocaleDateString('en-PK', { month: 'long', year: 'numeric' });
+
+    const avatarHTML = session.picture
+      ? `<img class="profile-avatar" src="${session.picture}" alt="${escapeHTML(session.name)}" referrerpolicy="no-referrer">`
+      : `<div class="profile-avatar" style="background:${avatarColor(session.email)}">${escapeHTML(initials(session.name))}</div>`;
+
+    let ordersHTML = '';
+    if (orders.length === 0) {
+      ordersHTML = `
+        <div class="empty-state">
+          <h2>No orders yet</h2>
+          <p>Your past orders will show up here once you place one.</p>
+          <a href="order.html" class="btn">Start an Order</a>
+        </div>`;
+    } else {
+      ordersHTML = orders.map((o, idx) => {
+        const date = new Date(o.timestamp).toLocaleDateString('en-PK', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' }) +
+          ' · ' + new Date(o.timestamp).toLocaleTimeString('en-PK', { hour: '2-digit', minute: '2-digit' });
+        const itemsHTML = o.items.map(i => `
+          <div class="oc-item"><span>${i.qty} × ${escapeHTML(i.name)}</span><span>$${(i.price * i.qty).toFixed(2)}</span></div>
+        `).join('');
+        const itemSummary = o.items.map(i => `${i.qty}× ${i.name}`).join(', ');
+        return `
+        <div class="order-card" id="order-${idx}">
+          <div class="order-card-head" data-idx="${idx}">
+            <div class="oc-left">
+              <div class="oid">#${escapeHTML(o.id)} <span style="color:#999;font-weight:400;font-size:12px;">— ${escapeHTML(itemSummary)}</span></div>
+              <div class="date">${date}</div>
+            </div>
+            <div class="oc-right">
+              <span class="status-badge">${escapeHTML(o.status || 'Confirmed')}</span>
+              <span class="total">$${o.total.toFixed(2)}</span>
+              <span class="chevron">▾</span>
+            </div>
+          </div>
+          <div class="order-card-body">
+            <div class="order-card-body-inner">
+              ${itemsHTML}
+              <div class="oc-totals">
+                <div class="row"><span>Subtotal</span><span>$${o.subtotal.toFixed(2)}</span></div>
+                <div class="row"><span>Tax</span><span>$${o.tax.toFixed(2)}</span></div>
+                <div class="row" style="font-weight:800;"><span>Total</span><span>$${o.total.toFixed(2)}</span></div>
+              </div>
+              <div class="oc-actions">
+                <button class="btn reorder-btn" data-idx="${idx}" style="background:#1D5C9E;">🔁 Reorder</button>
+              </div>
+            </div>
+          </div>
+        </div>`;
+      }).join('');
+    }
+
+    container.innerHTML = `
+      <div class="profile-card">
+        ${avatarHTML}
+        <div class="profile-info">
+          <div class="name">${escapeHTML(session.name)}</div>
+          <div class="email">${escapeHTML(session.email)}</div>
+          <div class="since">Member since ${since} · Signed in with ${session.provider === 'google' ? 'Google' : 'Email'}</div>
+        </div>
+        <div class="profile-stats">
+          <div class="stat"><div class="n">${stats.orderCount}</div><div class="l">Orders</div></div>
+          <div class="stat"><div class="n">$${stats.totalSpent.toFixed(0)}</div><div class="l">Spent</div></div>
+          <div class="stat"><div class="n">${stats.points}</div><div class="l">Points</div></div>
+        </div>
+      </div>
+      <h2 style="font-family:'Archivo Black',sans-serif;font-size:20px;margin-bottom:14px;">Order History</h2>
+      ${ordersHTML}
+    `;
+
+    container.querySelectorAll('.order-card-head').forEach(head => {
+      head.addEventListener('click', () => {
+        head.closest('.order-card').classList.toggle('open');
+      });
+    });
+
+    container.querySelectorAll('.reorder-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const order = orders[parseInt(btn.dataset.idx, 10)];
+        const cart = order.items.map(i => ({ name: i.name, price: i.price, qty: i.qty }));
+        sessionStorage.setItem('cart', JSON.stringify(cart));
+        window.location.href = 'order.html';
+      });
+    });
+  }
+
+  window.addEventListener('DOMContentLoaded', render);
+</script>
+</body>
+</html>

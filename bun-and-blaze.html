@@ -409,6 +409,7 @@
       <a href="#why">Why Us</a>
       <a href="#visit">Visit</a>
     </div>
+      <div id="authWidget"></div>
       <a href="order.html" class="nav-cta order-trigger">Order Now</a>
       <button class="nav-toggle" id="navToggle" aria-label="Toggle menu" aria-expanded="false" aria-controls="navLinks">
         <span></span><span></span><span></span>
@@ -690,7 +691,21 @@
     });
     card.addEventListener('mouseleave', () => { card.style.transform = ''; });
   });
+
+  // Live order activity ticker (social proof)
+  const activityNames  = ['Ayesha','Bilal','Zainab','Hamza','Sara','Usman','Areeba','Fahad','Mahnoor','Talha','Iqra','Danish'];
+  const activityCities = ['Lahore','Karachi','Islamabad','Faisalabad','Multan','Rawalpindi','Peshawar'];
+  const activityItems  = ['Blaze Stack Burger','Classic Combo','Chicken Craze deal','Loaded Fries','Spicy Zinger Burger','Family Feast'];
+  function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+  function fireActivityToast() {
+    if (document.hidden) return;
+    const msg = `🔥 ${pick(activityNames)} in ${pick(activityCities)} just ordered ${pick(activityItems)}`;
+    if (window.BB) BB.toast(msg);
+  }
+  setTimeout(fireActivityToast, 6000);
+  setInterval(fireActivityToast, 22000);
 </script>
 
+<script src="account.js"></script>
 </body>
 </html>

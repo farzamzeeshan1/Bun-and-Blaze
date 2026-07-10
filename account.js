@@ -191,7 +191,9 @@
         border-radius:12px;padding:28px 26px;position:relative;
         border:3px solid #1C1C1C;box-shadow:8px 8px 0 #F2B705;
         font-family:'Archivo',sans-serif;
+        animation:bbModalIn .22s ease;
       }
+      @keyframes bbModalIn{from{opacity:0;transform:translateY(10px) scale(.98);}to{opacity:1;transform:translateY(0) scale(1);}}
       .bb-modal-card h2{font-family:'Archivo Black',sans-serif;font-size:22px;margin-bottom:6px;color:#C8102E;text-transform:uppercase;}
       .bb-modal-card p.sub{font-size:13px;color:#555;margin-bottom:20px;}
       .bb-modal-close{position:absolute;top:14px;right:16px;background:none;border:none;font-size:20px;cursor:pointer;color:#1C1C1C;}

@@ -12,7 +12,7 @@
     "name": "Family Feast",
     "description": "4 Burgers, 2 Loaded Fries & 4 Soft Drinks",
     "price": 34.99,
-    "image": "https://loremflickr.com/400/300/fastfood,family?lock=1001",
+    "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Burger_with_French_Fries.jpg",
     "category": "Deals"
   },
   {
@@ -28,7 +28,7 @@
     "name": "Snack Pack",
     "description": "Nuggets, Onion Rings, Cheese Sticks & a Drink",
     "price": 11.99,
-    "image": "https://loremflickr.com/400/300/snacks,fastfood?lock=1004",
+    "image": "https://commons.wikimedia.org/wiki/Special:FilePath/OnionRings.JPG",
     "category": "Deals"
   },
   {
@@ -68,7 +68,7 @@
     "name": "BBQ Chicken Wings",
     "description": "8 pieces of smoky BBQ wings",
     "price": 8.49,
-    "image": "https://images.unsplash.com/photo-1608039829572-78524f79c4c7?w=400",
+    "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Bbq_chicken_wings.JPG",
     "category": "Sides"
   },
   {
@@ -180,7 +180,7 @@
     "name": "Fish & Chips",
     "description": "Crispy battered fish with fries",
     "price": 7.99,
-    "image": "https://images.unsplash.com/photo-1596797038530-2c107229654b?w=400",
+    "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Fish_and_chips.jpg",
     "category": "Sides"
   },
   {
@@ -228,7 +228,7 @@
     "name": "Chocolate Mousse",
     "description": "Rich chocolate dessert",
     "price": 3.49,
-    "image": "https://loremflickr.com/400/300/dessert,chocolate?lock=666",
+    "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Chocolate_Mousse.jpg",
     "category": "Desserts"
   },
   {
@@ -260,7 +260,7 @@
     "name": "Grilled Chicken Sandwich",
     "description": "Grilled chicken breast with lettuce and mayo",
     "price": 6.49,
-    "image": "https://images.unsplash.com/photo-1606755962773-d324e0a13086?w=400",
+    "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Grilled_Chicken_Sandwich.jpg",
     "category": "Sandwiches"
   },
   {
@@ -268,7 +268,7 @@
     "name": "BBQ Pulled Pork Sandwich",
     "description": "Slow‑cooked pulled pork with BBQ sauce",
     "price": 7.49,
-    "image": "https://images.unsplash.com/photo-1628840042765-356cda07504e?w=400",
+    "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Pulled_pork_sandwich.jpg",
     "category": "Sandwiches"
   },
   {

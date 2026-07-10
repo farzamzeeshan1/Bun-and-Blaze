@@ -259,12 +259,7 @@
     const eta = orderData.eta || 15;
     const readyBy = new Date(ts.getTime() + eta * 60000);
     const readyByStr = readyBy.toLocaleTimeString('en-PK', { hour: '2-digit', minute: '2-digit' });
-    function escapeHTML(s) {
-      return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({
-        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
-      }[c]));
-    }
-    const greeting = session ? `Thanks, ${escapeHTML(session.name.split(' ')[0])}! ` : 'Thank you! ';
+    const greeting = session ? `Thanks, ${window.BB.escapeHTML(session.name.split(' ')[0])}! ` : 'Thank you! ';
 
     document.getElementById('receiptContent').innerHTML = `
       <div class="order-meta">

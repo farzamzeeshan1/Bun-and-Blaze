@@ -63,6 +63,18 @@
     return colors[h % colors.length];
   }
 
+  function escapeHTML(s) {
+    return String(s == null ? "" : s).replace(/[&<>"']/g, c => ({
+      "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+    }[c]));
+  }
+
+  // Exposed so other pages (account.html, receipt.html) can reuse them
+  // instead of redefining the same logic.
+  BB.initials = initials;
+  BB.avatarColor = avatarColor;
+  BB.escapeHTML = escapeHTML;
+
   BB.formatMoney = n => `$${Number(n || 0).toFixed(2)}`;
 
   BB.orderId = () => "BB-" + Math.floor(10000 + Math.random() * 89999);
@@ -288,10 +300,15 @@
     return String(name || "").split(" ")[0] || "Account";
   }
 
-  function escapeHTML(s) {
-    return String(s == null ? "" : s).replace(/[&<>"']/g, c => ({
-      "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
-    }[c]));
+  // Shared by both sign-in paths (Google + email): saves the session,
+  // closes the modal, shows a welcome toast, and resumes whatever the
+  // caller was waiting on (e.g. placing an order).
+  function completeSignIn(user, viaLabel) {
+    const session = BB.setSession(user);
+    closeModal();
+    BB.toast(`Welcome, ${firstName(session.name)}! ${viaLabel}`);
+    if (pendingSuccess) { const cb = pendingSuccess; pendingSuccess = null; cb(session); }
+    return session;
   }
 
   /* ---------------- sign-in modal ---------------- */
@@ -341,10 +358,7 @@
         return;
       }
       err.style.display = "none";
-      const session = BB.setSession({ name, email, provider: "email" });
-      closeModal();
-      BB.toast(`Welcome, ${firstName(session.name)}! You're signed in.`);
-      if (pendingSuccess) { const cb = pendingSuccess; pendingSuccess = null; cb(session); }
+      completeSignIn({ name, email, provider: "email" }, "You're signed in.");
     });
   }
 
@@ -411,15 +425,12 @@
   function handleGoogleCredential(response) {
     const payload = decodeJwt(response.credential);
     if (!payload || !payload.email) return;
-    const session = BB.setSession({
+    completeSignIn({
       name: payload.name || payload.email.split("@")[0],
       email: payload.email,
       picture: payload.picture,
       provider: "google",
-    });
-    closeModal();
-    BB.toast(`Welcome, ${firstName(session.name)}! Signed in with Google.`);
-    if (pendingSuccess) { const cb = pendingSuccess; pendingSuccess = null; cb(session); }
+    }, "Signed in with Google.");
   }
 
   function maybeInitGoogle() {

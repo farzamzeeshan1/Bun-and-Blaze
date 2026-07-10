@@ -211,20 +211,7 @@
 
 <script src="account.js"></script>
 <script>
-  function escapeHTML(s) {
-    return String(s == null ? "" : s).replace(/[&<>"']/g, c => ({
-      "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
-    }[c]));
-  }
-  function initials(name) {
-    return (name || "?").trim().split(/\s+/).slice(0,2).map(w => w[0]).join("").toUpperCase();
-  }
-  function avatarColor(seed) {
-    const colors = ["#C8102E", "#F2B705", "#3B2A22", "#2a7a2a", "#1D5C9E", "#7A2A6D"];
-    let h = 0;
-    for (const ch of String(seed)) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
-    return colors[h % colors.length];
-  }
+  const { escapeHTML, initials, avatarColor } = window.BB;
 
   function render() {
     const container = document.getElementById('accountContent');

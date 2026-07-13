@@ -46,7 +46,13 @@
     color:var(--cream);font-family:'Archivo Black';font-size:22px;
     display:flex;align-items:center;gap:8px;
   }
-  .logo .flame{color:var(--mustard);}
+  .logo .flame{color:var(--mustard);display:inline-block;animation:flameFlicker 1.6s ease-in-out infinite;}
+  @keyframes flameFlicker{
+    0%,100%{transform:scale(1) rotate(0deg);filter:brightness(1);}
+    25%{transform:scale(1.1) rotate(-5deg);filter:brightness(1.2);}
+    50%{transform:scale(0.94) rotate(4deg);filter:brightness(0.92);}
+    75%{transform:scale(1.06) rotate(-3deg);filter:brightness(1.12);}
+  }
   .nav-links{display:flex;gap:28px;}
   .nav-links a{
     color:var(--cream);font-weight:700;font-size:14px;
@@ -72,7 +78,9 @@
     padding:150px 0 90px;
     overflow:hidden;
   }
+  .ember-canvas{position:absolute;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;}
   .hero-grid{
+    position:relative;z-index:1;
     display:grid;grid-template-columns:1.1fr 0.9fr;gap:40px;align-items:center;
   }
   .eyebrow{
@@ -105,16 +113,54 @@
   .btn-ghost:hover{background:var(--cream);color:var(--char);}
 
   /* burger graphic */
-  .burger-stage{position:relative;height:420px;display:flex;align-items:center;justify-content:center;}
+  .burger-stage{position:relative;height:420px;display:flex;align-items:center;justify-content:center;perspective:1000px;}
+  .heat-glow{
+    position:absolute;width:380px;height:380px;left:50%;top:52%;
+    transform:translate(-50%,-50%);pointer-events:none;z-index:0;
+    background:radial-gradient(circle, rgba(242,183,5,0.38), rgba(200,16,46,0.16) 45%, transparent 72%);
+    filter:blur(8px);
+    animation:heatPulse 3.2s ease-in-out infinite;
+  }
+  @keyframes heatPulse{
+    0%,100%{opacity:.5;transform:translate(-50%,-50%) scale(0.9);}
+    50%{opacity:.9;transform:translate(-50%,-50%) scale(1.1);}
+  }
+  .burger-tilt{position:relative;transform-style:preserve-3d;transition:transform .18s ease-out;will-change:transform;z-index:2;}
   .burger{position:relative;width:320px;}
   .layer{
     width:100%;border-radius:50%;position:relative;
+    opacity:0;
+  }
+  @keyframes slamIn{
+    0%{opacity:0;transform:translate(var(--fx,0),var(--fy,-140px)) rotate(var(--frot,0deg)) scale(.7);}
+    62%{opacity:1;transform:translate(0,4px) rotate(0deg) scale(1.05);}
+    100%{opacity:1;transform:translate(0,0) rotate(0deg) scale(1);}
   }
   .bun-top{
     height:90px;background:linear-gradient(180deg,#E8A33D,#C97A1F);
     border-radius:50% 50% 18% 18% / 70% 70% 30% 30%;
     box-shadow:inset 0 -8px 0 rgba(0,0,0,0.12);
-    z-index:6;
+    z-index:6;overflow:hidden;
+    --fx:0px;--fy:-220px;--frot:-10deg;
+    animation:slamIn .6s cubic-bezier(.34,1.56,.64,1) forwards;animation-delay:1.0s;
+  }
+  .sheen{
+    position:absolute;top:0;left:-60%;width:40%;height:100%;
+    background:linear-gradient(115deg, transparent, rgba(255,255,255,0.6), transparent);
+    animation:sheenSweep 4.5s ease-in-out infinite;animation-delay:2.4s;
+  }
+  @keyframes sheenSweep{0%,86%{left:-60%;}100%{left:130%;}}
+  .impact-ring{
+    position:absolute;left:50%;bottom:64px;width:60px;height:16px;
+    transform:translateX(-50%) scale(.2);border-radius:50%;pointer-events:none;
+    background:radial-gradient(ellipse at center, rgba(255,255,255,0.9), rgba(242,183,5,0.4) 45%, transparent 75%);
+    opacity:0;z-index:1;
+    animation:ringPulse .55s ease-out forwards;animation-delay:1.95s;
+  }
+  @keyframes ringPulse{
+    0%{opacity:0;transform:translateX(-50%) scale(.2);}
+    35%{opacity:.9;transform:translateX(-50%) scale(1.3);}
+    100%{opacity:0;transform:translateX(-50%) scale(2.6);}
   }
   .seed{position:absolute;width:6px;height:10px;background:#FFF3D6;border-radius:50%;}
   .lettuce{
@@ -122,25 +168,35 @@
     border-radius:40% 40% 10% 10%/ 60% 60% 10% 10%;
     clip-path:polygon(0 40%,5% 0,12% 50%,20% 5%,30% 55%,40% 0,50% 50%,60% 5%,70% 55%,80% 0,88% 50%,95% 0,100% 40%,100% 100%,0 100%);
     z-index:5;
+    --fx:-180px;--fy:-30px;--frot:-18deg;
+    animation:slamIn .55s cubic-bezier(.34,1.56,.64,1) forwards;animation-delay:1.18s;
   }
   .cheese{
     height:20px;margin-top:-10px;background:var(--mustard);
     clip-path:polygon(0 0,100% 0,92% 100%,8% 100%);
     z-index:4;
+    --fx:180px;--fy:-30px;--frot:16deg;
+    animation:slamIn .55s cubic-bezier(.34,1.56,.64,1) forwards;animation-delay:1.34s;
   }
   .patty{
     height:38px;margin-top:-6px;background:linear-gradient(180deg,#5A3A28,#3B2A22);
     border-radius:50px;box-shadow:inset 0 -6px 0 rgba(0,0,0,0.25);
     z-index:3;
+    --fx:0px;--fy:-140px;--frot:8deg;
+    animation:slamIn .55s cubic-bezier(.34,1.56,.64,1) forwards;animation-delay:1.5s;
   }
   .tomato{
     height:14px;margin-top:-8px;background:var(--red);
     border-radius:50%;z-index:2;
+    --fx:-130px;--fy:-20px;--frot:-14deg;
+    animation:slamIn .5s cubic-bezier(.34,1.56,.64,1) forwards;animation-delay:1.66s;
   }
   .bun-bottom{
     height:54px;margin-top:-10px;background:linear-gradient(180deg,#D88E2E,#B26B1B);
     border-radius:20% 20% 50% 50% / 30% 30% 70% 70%;
     z-index:1;
+    --fx:0px;--fy:70px;--frot:0deg;
+    animation:slamIn .5s cubic-bezier(.34,1.56,.64,1) forwards;animation-delay:1.8s;
   }
   .burger-stage::before{
     content:'';position:absolute;width:340px;height:60px;background:radial-gradient(ellipse at center, rgba(0,0,0,0.35), transparent 70%);
@@ -151,16 +207,35 @@
     width:108px;height:108px;background:var(--red);color:var(--cream);
     border-radius:50%;display:flex;align-items:center;justify-content:center;
     text-align:center;font-family:'Archivo Black';font-size:13px;line-height:1.15;
-    transform:rotate(12deg);border:3px dashed var(--mustard);
-    animation:spin 18s linear infinite;
+    border:3px dashed var(--mustard);
+    opacity:0;transform:rotate(-30deg) scale(.3);
+    animation-name:badgePop, spin, badgeGlow;
+    animation-duration:.55s, 18s, 2.2s;
+    animation-timing-function:cubic-bezier(.34,1.56,.64,1), linear, ease-in-out;
+    animation-iteration-count:1, infinite, infinite;
+    animation-fill-mode:forwards, none, none;
+    animation-delay:2.0s, 2.55s, 2.55s;
+  }
+  @keyframes badgePop{
+    0%{opacity:0;transform:rotate(-30deg) scale(.3);}
+    70%{opacity:1;transform:rotate(20deg) scale(1.18);}
+    100%{opacity:1;transform:rotate(12deg) scale(1);}
   }
   @keyframes spin{from{transform:rotate(12deg);}to{transform:rotate(372deg);}}
+  @keyframes badgeGlow{
+    0%,100%{box-shadow:0 3px 8px rgba(0,0,0,.35), 0 0 0 0 rgba(242,183,5,0);}
+    50%{box-shadow:0 3px 8px rgba(0,0,0,.35), 0 0 26px 7px rgba(242,183,5,.6);}
+  }
 
   /* ---------- MARQUEE ---------- */
   .marquee-strip{
-    background:var(--mustard);border-top:4px solid var(--char);border-bottom:4px solid var(--char);
+    background:linear-gradient(90deg, var(--mustard), #FFDD6B, var(--mustard));
+    background-size:220% 100%;
+    animation:marqueeShimmer 7s linear infinite;
+    border-top:4px solid var(--char);border-bottom:4px solid var(--char);
     overflow:hidden;white-space:nowrap;padding:12px 0;
   }
+  @keyframes marqueeShimmer{0%{background-position:0% 0;}100%{background-position:220% 0;}}
   .marquee-track{display:inline-block;animation:scroll 22s linear infinite;}
   .marquee-track span{
     font-family:'Archivo Black';font-size:16px;color:var(--char);
@@ -297,8 +372,15 @@
   .burger{animation:bob 4.5s ease-in-out infinite;}
   @keyframes bob{0%,100%{transform:translateY(0);}50%{transform:translateY(-10px);}}
 
-  /* sizzle micro-jitter on patty */
-  .patty{animation:sizzle 2.4s ease-in-out infinite;}
+  /* sizzle micro-jitter on patty (layered alongside its slam-in entrance) */
+  .patty{
+    animation-name:slamIn, sizzle;
+    animation-duration:.55s, 2.4s;
+    animation-timing-function:cubic-bezier(.34,1.56,.64,1), ease-in-out;
+    animation-iteration-count:1, infinite;
+    animation-fill-mode:forwards, none;
+    animation-delay:1.5s, 2.05s;
+  }
   @keyframes sizzle{0%,100%{transform:translateY(0) scaleX(1);}50%{transform:translateY(-1px) scaleX(1.01);}}
 
   /* ---------- MENU CARD MOTION ---------- */
@@ -348,9 +430,13 @@
   .to-top:hover{transform:translateY(-3px);}
 
   @media (prefers-reduced-motion: reduce){
-    .badge, .marquee-track, .burger, .patty, .combo-price, .testi-track{animation:none;}
+    .badge, .marquee-track, .marquee-strip, .burger, .patty, .combo-price, .testi-track,
+    .heat-glow, .sheen, .impact-ring, .logo .flame{animation:none;}
+    .layer{opacity:1;transform:none;animation:none;}
+    .ember-canvas, .impact-ring, .sheen{display:none;}
     .reveal, .reveal-stagger > *{opacity:1;transform:none;transition:none;}
     .hero-grid > div:first-child > *, .burger-stage{opacity:1;transform:none;animation:none;}
+    .burger-tilt{transform:none !important;}
   }
 
   @media (max-width:900px){
@@ -430,18 +516,23 @@
       </div>
     </div>
     <div class="burger-stage">
+      <div class="heat-glow"></div>
       <div class="steam" id="steamHost"></div>
-      <div class="burger">
-        <div class="badge">FRESH<br>SMASHED<br>DAILY</div>
-        <div class="layer bun-top"></div>
-        <div class="layer lettuce"></div>
-        <div class="layer cheese"></div>
-        <div class="layer patty"></div>
-        <div class="layer tomato"></div>
-        <div class="layer bun-bottom"></div>
+      <div class="burger-tilt" id="burgerTilt">
+        <div class="burger">
+          <div class="badge">FRESH<br>SMASHED<br>DAILY</div>
+          <div class="layer bun-top"><div class="sheen"></div></div>
+          <div class="layer lettuce"></div>
+          <div class="layer cheese"></div>
+          <div class="layer patty"></div>
+          <div class="layer tomato"></div>
+          <div class="layer bun-bottom"></div>
+        </div>
       </div>
+      <div class="impact-ring"></div>
     </div>
   </div>
+  <canvas class="ember-canvas" id="emberCanvas"></canvas>
 </header>
 
 <div class="marquee-strip">
@@ -680,6 +771,75 @@
     }
     setInterval(spawnSteam, 900);
     spawnSteam();
+  }
+
+  // Ambient ember particles drifting up across the whole hero, grill-fire style
+  const emberCanvas = document.getElementById('emberCanvas');
+  if (emberCanvas && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const ctx = emberCanvas.getContext('2d');
+    const heroEl = document.querySelector('header.hero');
+    let W, H;
+    function resizeEmberCanvas() {
+      W = emberCanvas.width = heroEl.offsetWidth;
+      H = emberCanvas.height = heroEl.offsetHeight;
+    }
+    resizeEmberCanvas();
+    window.addEventListener('resize', resizeEmberCanvas);
+
+    const embers = [];
+    const MAX_EMBERS = 40;
+    function spawnEmber() {
+      embers.push({
+        x: Math.random() * W,
+        y: H + 10,
+        vx: (Math.random() - 0.5) * 0.35,
+        vy: -(0.35 + Math.random() * 0.85),
+        size: 1 + Math.random() * 2.2,
+        life: 0,
+        maxLife: 260 + Math.random() * 220,
+        hue: 28 + Math.random() * 32,
+        flicker: Math.random() * Math.PI * 2
+      });
+    }
+    function tickEmbers() {
+      ctx.clearRect(0, 0, W, H);
+      if (embers.length < MAX_EMBERS && Math.random() < 0.6) spawnEmber();
+      for (let i = embers.length - 1; i >= 0; i--) {
+        const p = embers[i];
+        p.life++;
+        p.x += p.vx;
+        p.y += p.vy;
+        p.flicker += 0.15;
+        const t = Math.min(p.life / p.maxLife, 1);
+        const alpha = Math.sin(t * Math.PI) * 0.85;
+        const flick = 0.7 + Math.sin(p.flicker) * 0.3;
+        const grad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.size * 3);
+        grad.addColorStop(0, `hsla(${p.hue}, 100%, 65%, ${alpha * flick})`);
+        grad.addColorStop(1, `hsla(${p.hue}, 100%, 55%, 0)`);
+        ctx.fillStyle = grad;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size * 3, 0, Math.PI * 2);
+        ctx.fill();
+        if (p.life >= p.maxLife || p.y < -10) embers.splice(i, 1);
+      }
+      requestAnimationFrame(tickEmbers);
+    }
+    tickEmbers();
+  }
+
+  // Subtle 3D parallax tilt on the burger, following the cursor
+  const burgerStageEl = document.querySelector('.burger-stage');
+  const burgerTiltEl = document.getElementById('burgerTilt');
+  if (burgerStageEl && burgerTiltEl && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    burgerStageEl.addEventListener('mousemove', (e) => {
+      const r = burgerStageEl.getBoundingClientRect();
+      const x = (e.clientX - r.left) / r.width - 0.5;
+      const y = (e.clientY - r.top) / r.height - 0.5;
+      burgerTiltEl.style.transform = `rotateX(${y * -14}deg) rotateY(${x * 14}deg)`;
+    });
+    burgerStageEl.addEventListener('mouseleave', () => {
+      burgerTiltEl.style.transform = 'rotateX(0deg) rotateY(0deg)';
+    });
   }
 
   // Subtle tilt on menu cards following cursor

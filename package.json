@@ -1,0 +1,13 @@
+{
+  "name": "bun-and-blaze",
+  "version": "1.0.0",
+  "description": "Bun & Blaze - burger restaurant demo site with a Node/Express backend for menu data and per-customer order history",
+  "private": true,
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}

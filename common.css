@@ -1,0 +1,93 @@
+/* ============================================================
+   common.css — Bun & Blaze shared design system
+   ------------------------------------------------------------
+   Colors, base typography, the top nav bar, and buttons are the
+   same on every inner page (menu, order, receipt, account), so
+   they live here once instead of being copy-pasted into each
+   page's <style> block. Each page's own <style> block only has
+   the layout/components unique to that page.
+   ============================================================ */
+
+:root {
+  --red: #C8102E;
+  --red-dark: #9c0c22;
+  --mustard: #F2B705;
+  --char: #1C1C1C;
+  --cream: #FFF8E7;
+  --brown: #3B2A22;
+
+  --shadow-sm: 0 2px 10px rgba(0,0,0,0.06);
+  --shadow-md: 0 10px 24px rgba(0,0,0,0.12);
+  --shadow-lg: 0 14px 34px rgba(0,0,0,0.22);
+  --ease: cubic-bezier(.4,0,.2,1);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Archivo', sans-serif;
+  background: var(--cream);
+  color: var(--char);
+}
+
+/* Keyboard-accessible focus ring, kept visible everywhere */
+a:focus-visible, button:focus-visible, input:focus-visible {
+  outline: 3px solid var(--mustard);
+  outline-offset: 2px;
+}
+
+/* ---------------- top nav bar ---------------- */
+
+.top-bar {
+  background: linear-gradient(120deg, #1C1C1C 0%, #2b2118 100%);
+  border-bottom: 4px solid var(--mustard);
+  padding: 14px 28px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  box-shadow: 0 4px 18px rgba(0,0,0,0.22);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.top-bar .logo {
+  color: var(--cream);
+  font-family: 'Archivo Black', sans-serif;
+  font-size: 20px;
+  text-decoration: none;
+  letter-spacing: 0.01em;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+}
+
+/* ---------------- buttons ---------------- */
+
+.btn {
+  display: inline-block;
+  padding: 9px 18px;
+  background: linear-gradient(135deg, var(--red), var(--red-dark));
+  color: var(--cream);
+  border: none;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  text-decoration: none;
+  font-family: inherit;
+  transition: transform 0.15s var(--ease), box-shadow 0.15s var(--ease), background 0.2s var(--ease);
+  box-shadow: 0 3px 0 rgba(0,0,0,0.18);
+}
+.btn:hover  { background: var(--mustard); color: var(--char); transform: translateY(-1px); box-shadow: 0 4px 0 rgba(0,0,0,0.18); }
+.btn:active { transform: translateY(1px); box-shadow: 0 1px 0 rgba(0,0,0,0.18); }
+.btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; box-shadow: 0 3px 0 rgba(0,0,0,0.18); }
+
+.btn-outline {
+  background: transparent;
+  border: 2px solid var(--cream);
+  color: var(--cream);
+  box-shadow: none;
+}
+.btn-outline:hover { background: var(--cream); color: var(--char); }

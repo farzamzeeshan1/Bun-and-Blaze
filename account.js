@@ -109,42 +109,73 @@
   };
 
   /* ---------------- order history ---------------- */
+  // Orders are stored on the server (data/orders.json, via the
+  // /api/orders endpoints in server.js) so a customer's order
+  // history is the same across any browser/device they sign in
+  // from — not just remembered by one browser.
+  //
+  // If the API can't be reached (for example the site is opened
+  // as plain static files instead of run with `npm start`), we
+  // fall back to localStorage so the feature still works, just
+  // without the cross-device sync.
 
-  BB.getOrders = function (email) {
-    const key = ORDERS_PREFIX + slug(email || (BB.getSession() || {}).email);
-    if (!email && !BB.getSession()) return [];
+  function localOrdersKey(email) {
+    return ORDERS_PREFIX + slug(email);
+  }
+
+  function getOrdersLocal(email) {
     try {
-      const list = JSON.parse(localStorage.getItem(key) || "[]");
+      const list = JSON.parse(localStorage.getItem(localOrdersKey(email)) || "[]");
       return list.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
     } catch (e) {
       return [];
     }
-  };
+  }
 
-  BB.saveOrder = function (order) {
-    const session = BB.getSession();
-    if (!session) return null;
-    const key = ORDERS_PREFIX + slug(session.email);
-    const list = BB.getOrders(session.email);
+  function saveOrderLocal(email, order) {
+    const list = getOrdersLocal(email);
     const record = Object.assign(
-      {
-        id: BB.orderId(),
-        timestamp: new Date().toISOString(),
-        status: "Confirmed",
-        eta: 10 + Math.floor(Math.random() * 12),
-      },
+      { id: BB.orderId(), timestamp: new Date().toISOString(), status: "Confirmed", eta: 10 + Math.floor(Math.random() * 12) },
       order
     );
     list.unshift(record);
-    localStorage.setItem(key, JSON.stringify(list));
+    localStorage.setItem(localOrdersKey(email), JSON.stringify(list));
     return record;
+  }
+
+  BB.getOrders = async function (email) {
+    const targetEmail = email || (BB.getSession() || {}).email;
+    if (!targetEmail) return [];
+    try {
+      const res = await fetch(`/api/orders?email=${encodeURIComponent(targetEmail)}`);
+      if (!res.ok) throw new Error("API error");
+      return await res.json();
+    } catch (e) {
+      return getOrdersLocal(targetEmail);
+    }
   };
 
-  BB.stats = function () {
-    const orders = BB.getOrders();
-    const totalSpent = orders.reduce((s, o) => s + (o.total || 0), 0);
+  BB.saveOrder = async function (order) {
+    const session = BB.getSession();
+    if (!session) return null;
+    try {
+      const res = await fetch("/api/orders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(Object.assign({ email: session.email }, order)),
+      });
+      if (!res.ok) throw new Error("API error");
+      return await res.json();
+    } catch (e) {
+      return saveOrderLocal(session.email, order);
+    }
+  };
+
+  BB.stats = async function (orders) {
+    const list = orders || await BB.getOrders();
+    const totalSpent = list.reduce((s, o) => s + (o.total || 0), 0);
     return {
-      orderCount: orders.length,
+      orderCount: list.length,
       totalSpent,
       points: Math.floor(totalSpent * 10),
     };

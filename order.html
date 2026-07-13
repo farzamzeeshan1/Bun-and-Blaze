@@ -6,62 +6,8 @@
   <title>Order - Bun &amp; Blaze</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Archivo:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="common.css">
   <style>
-    :root {
-      --red: #C8102E;
-      --mustard: #F2B705;
-      --char: #1C1C1C;
-      --cream: #FFF8E7;
-      --brown: #3B2A22;
-    }
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-      font-family: 'Archivo', sans-serif;
-      background: var(--cream);
-      color: var(--char);
-      padding: 0;
-    }
-    /* NAV */
-    .top-bar {
-      background: var(--char);
-      border-bottom: 4px solid var(--mustard);
-      padding: 14px 28px;
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      flex-wrap: wrap;
-    }
-    .top-bar .logo {
-      color: var(--cream);
-      font-family: 'Archivo Black', sans-serif;
-      font-size: 20px;
-      text-decoration: none;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      flex: 1;
-    }
-    .btn {
-      display: inline-block;
-      padding: 10px 20px;
-      background: var(--red);
-      color: var(--cream);
-      text-decoration: none;
-      border-radius: 4px;
-      font-weight: 700;
-      font-size: 14px;
-      border: none;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-    .btn:hover { background: var(--mustard); color: var(--char); }
-    .btn-outline {
-      background: transparent;
-      border: 2px solid var(--cream);
-      color: var(--cream);
-    }
-    .btn-outline:hover { background: var(--cream); color: var(--char); }
-
     /* WRAP */
     .wrap { max-width: 1000px; margin: 0 auto; padding: 40px 28px; }
     h1 {

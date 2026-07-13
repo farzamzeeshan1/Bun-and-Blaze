@@ -146,12 +146,23 @@ window.addEventListener('DOMContentLoaded', () => {
     window.BB.requireAuth(() => finalizeOrder(items));
   }
 
-  function finalizeOrder(items) {
+  async function finalizeOrder(items) {
     const subtotal = items.reduce((s, i) => s + i.price * i.qty, 0);
     const tax      = subtotal * 0.07;
     const total    = subtotal + tax;
 
-    const record = window.BB.saveOrder({ items, subtotal, tax, total });
+    confirmBtn.disabled = true;
+    const originalLabel = confirmBtn.textContent;
+    confirmBtn.textContent = 'Placing order…';
+
+    const record = await window.BB.saveOrder({ items, subtotal, tax, total });
+
+    if (!record) {
+      confirmBtn.disabled = false;
+      confirmBtn.textContent = originalLabel;
+      alert('Something went wrong placing your order. Please try again.');
+      return;
+    }
 
     sessionStorage.setItem('orderData', JSON.stringify(record));
     sessionStorage.removeItem('cart');

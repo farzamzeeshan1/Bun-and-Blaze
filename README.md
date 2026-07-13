@@ -1,6 +1,6 @@
 # Bun & Blaze 🔥🍔
 
-A fully responsive, animated single-page website for a fictional fast-food smash-burger brand — built as a front-end portfolio piece to demonstrate design, animation, and vanilla JavaScript skills (no frameworks, no libraries).
+A fully responsive, animated website for a fictional fast-food smash-burger brand — built as a portfolio piece to demonstrate front-end design/animation skills plus a real Node.js/Express backend for accounts and order history.
 
 **Live demo:** [add your deployed link here]
 
@@ -8,66 +8,73 @@ A fully responsive, animated single-page website for a fictional fast-food smash
 
 ## Overview
 
-Bun & Blaze is a concept brand built around the idea of fast food that doesn't feel lazy — hand-pressed smash patties, fast service, and a bold diner-meets-streetwear visual identity. The entire site, from the color palette to the burger graphic in the hero, was designed and coded from scratch — no stock photography, no UI kits.
+Bun & Blaze is a concept brand built around the idea of fast food that doesn't feel lazy — hand-pressed smash patties, fast service, and a bold diner-meets-streetwear visual identity. The site includes a marketing homepage, a full menu with cart, a checkout flow, Google/email sign-in, and a real per-customer order history backed by a small Node server.
 
 ## Features
 
 - **Custom brand identity** — color palette, typography, and a hand-built CSS/HTML burger illustration (layered divs, no images)
-- **Hero entrance animation** — staggered fade/slide-in for headline, copy, and CTA buttons on page load
-- **Floating burger graphic** — gentle bobbing motion with a sizzling patty micro-jitter and rising steam particles
-- **Scroll-triggered reveals** — sections fade and rise into view using the Intersection Observer API
-- **Animated stat counters** — count up from zero when scrolled into view
-- **3D cursor-tilt hover effect** on menu cards
-- **Auto-scrolling testimonial carousel** — pauses on hover
-- **Sticky navigation bar** that compresses on scroll
-- **Scroll-to-top button** with fade-in on scroll
-- **Fully responsive** — desktop, tablet, and mobile breakpoints
-- **Accessibility-conscious** — visible keyboard focus states, and full `prefers-reduced-motion` support to disable animation for users who need it
+- **Hero entrance animation, floating burger graphic, scroll reveals, animated stat counters, 3D card tilt, auto-scrolling testimonials, sticky nav, scroll-to-top** — see `bun-and-blaze.html`
+- **Fully responsive & accessibility-conscious** — keyboard focus states, `prefers-reduced-motion` support
 - **Sign in with Google (or email)** — real Google Identity Services integration, with an email fallback so it works without any setup
-- **Per-customer order history** — every confirmed order is saved to the signed-in customer's account and viewable on the "My Account" page, with order tracking, reorder, and loyalty points
+- **Real per-customer order history** — orders are saved through a small Express API to a JSON file on the server (`data/orders.json`), so a customer's order history is the same no matter which browser or device they sign in from
 - **Live order tracker** on the receipt page (animated "Received → Kitchen → Grill → Ready" progress) and a social-proof activity ticker on the homepage
+- **Shared design system** (`common.css`) — colors, buttons, and the top nav bar are defined once and reused across every inner page instead of being duplicated
 
-## Accounts & Order History — how it actually works
+## How sign-in & order history actually work
 
-This is a static front-end site with no server or database, so "accounts" work like this:
-
-- **Sign-in** uses real [Google Identity Services](https://developers.google.com/identity/gsi/web) — no fake OAuth. To turn it on, create a free OAuth Client ID in the [Google Cloud Console](https://console.cloud.google.com/apis/credentials), add your deployed URL under "Authorized JavaScript origins," and paste the Client ID into `GOOGLE_CLIENT_ID` at the top of `account.js`. Until you do that, the Google button is skipped automatically and visitors sign in with just a name + email instead — the rest of the app works identically either way.
-- **Order history is stored in the browser** (`localStorage`), namespaced by the signed-in email. That means it persists across visits *on the same browser/device*, which is enough to demo a real "My Orders" experience — but it is **not** a real multi-device account system, since there's no backend to sync data between devices. A production version would replace the `localStorage` calls in `account.js` with requests to a real backend (Firebase, Supabase, your own API, etc.) and verify the Google ID token server-side instead of decoding it client-side.
-- Files involved: `account.js` (shared auth widget, sign-in modal, order storage), `account.html` (My Account / order history page). Every page includes `account.js` and has an `#authWidget` slot in its nav.
+- **Sign-in** uses real [Google Identity Services](https://developers.google.com/identity/gsi/web) — no fake OAuth. To turn it on, create a free OAuth Client ID in the [Google Cloud Console](https://console.cloud.google.com/apis/credentials), add your deployed URL under "Authorized JavaScript origins," and paste the Client ID into `GOOGLE_CLIENT_ID` at the top of `account.js`. Until you do that, the Google button is skipped automatically and visitors sign in with just a name + email instead.
+- **Order history is stored server-side** by `server.js`, in `data/orders.json`, grouped by customer email. This means it's genuinely shared across devices/browsers for the same signed-in email — a real step up from browser-only storage.
+- **If the server isn't running** (for example if you open the HTML files directly instead of via `npm start`), `account.js` automatically falls back to storing orders in the browser's `localStorage` instead, so the site still works — just without the cross-device sync. Nothing breaks either way.
+- One honest limitation: there's still no password or server-verified session — "being signed in" just means the browser remembers a name + email (and, with Google, a token that's decoded but not cryptographically verified server-side). That's fine for a demo; a production version would add server-side Google token verification and a real session/auth layer.
 
 ## Tech Stack
 
+- **Node.js + Express** (`server.js`) — serves the site and provides `/api/menu` and `/api/orders`
 - **HTML5** — semantic structure
-- **CSS3** — custom properties (CSS variables), keyframe animations, Grid/Flexbox layout, no frameworks
-- **Vanilla JavaScript** — Intersection Observer for scroll reveals, `requestAnimationFrame` for smooth counter animation, no external libraries
+- **CSS3** — custom properties, keyframe animations, Grid/Flexbox, shared `common.css` design system, no frameworks
+- **Vanilla JavaScript** — no build step, no front-end framework
 
 ## Project Structure
 
 ```
 bun-and-blaze/
-└── index.html   # everything (HTML, CSS, JS) in a single file
+├── server.js          # Express server: static hosting + /api/menu, /api/orders
+├── package.json
+├── data/              # created automatically at runtime — orders.json lives here
+├── common.css          # shared colors, buttons, top nav bar used by every inner page
+├── menu.json          # menu data (source of truth for prices/images/descriptions)
+├── account.js         # sign-in (Google + email), session, order history client
+├── bun-and-blaze.html # homepage
+├── menu.html          # full menu + cart
+├── order.html          # quick order page
+├── receipt.html       # order confirmation + live tracker
+├── account.html       # "My Account" — profile + order history
+└── *.png              # category fallback images used by menu.js
 ```
 
 ## Running Locally
 
-No build step or dependencies required.
-
-1. Clone or download this repository
-2. Open `index.html` directly in any modern browser
+Requires [Node.js](https://nodejs.org) (any recent LTS version).
 
 ```bash
 git clone https://github.com/yourusername/bun-and-blaze.git
 cd bun-and-blaze
-open index.html   # or just double-click the file
+npm install
+npm start
 ```
+
+Then open **http://localhost:3000**.
+
+(You can still just double-click `bun-and-blaze.html` to preview the front end without the server — sign-in and order history will work via the automatic `localStorage` fallback, just without cross-device sync.)
 
 ## Deployment
 
-This is a static site — it can be deployed anywhere that serves static files:
+Because this now has a real Node backend, it needs a host that can run Node — not a pure static host:
 
-- **GitHub Pages** — enable under repo Settings → Pages, source: `main` branch, `/ (root)`
-- **Netlify** — drag-and-drop `index.html` at [app.netlify.com/drop](https://app.netlify.com/drop)
-- **Vercel** — similar drag-and-drop deploy flow
+- **Render / Railway / Fly.io** — connect the repo, set the start command to `npm start`
+- Any VPS: `npm install && npm start` behind a process manager (pm2) and a reverse proxy (nginx)
+
+If you only want the static front-end experience (no shared server-side order history), you can still deploy just the HTML/CSS/JS/image files to GitHub Pages, Netlify, or Vercel — the `localStorage` fallback keeps everything working.
 
 ## Notes
 

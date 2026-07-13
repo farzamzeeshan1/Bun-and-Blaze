@@ -168,12 +168,23 @@ window.addEventListener('DOMContentLoaded', () => {
 
       // Require sign-in so the order can be attached to a customer
       // and appear in their order history.
-      window.BB.requireAuth(() => {
+      window.BB.requireAuth(async () => {
         const subtotal = cart.reduce((s, i) => s + i.price * i.qty, 0);
         const tax      = subtotal * 0.07;
         const total    = subtotal + tax;
 
-        const record = window.BB.saveOrder({ items: cart, subtotal, tax, total });
+        confirmCartBtn.disabled = true;
+        const originalLabel = confirmCartBtn.textContent;
+        confirmCartBtn.textContent = 'Placing order…';
+
+        const record = await window.BB.saveOrder({ items: cart, subtotal, tax, total });
+
+        if (!record) {
+          confirmCartBtn.disabled = false;
+          confirmCartBtn.textContent = originalLabel;
+          alert('Something went wrong placing your order. Please try again.');
+          return;
+        }
 
         sessionStorage.setItem('orderData', JSON.stringify(record));
         sessionStorage.removeItem('cart');

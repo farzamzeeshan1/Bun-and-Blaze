@@ -126,6 +126,20 @@
     50%{opacity:.9;transform:translate(-50%,-50%) scale(1.1);}
   }
   .burger-tilt{position:relative;transform-style:preserve-3d;transition:transform .18s ease-out;will-change:transform;z-index:2;}
+  .burger3d-mount{position:absolute;inset:0;z-index:3;cursor:grab;touch-action:none;}
+  .burger3d-mount:active{cursor:grabbing;}
+  .burger3d-mount canvas{display:block;width:100%;height:100%;}
+  .css-fallback{position:absolute;inset:0;}
+  .badge{z-index:5;}
+  .spin-hint{
+    position:absolute;left:50%;bottom:6px;transform:translateX(-50%);
+    background:rgba(0,0,0,0.5);color:var(--cream);font-size:11px;font-weight:700;
+    letter-spacing:0.04em;text-transform:uppercase;padding:6px 14px;border-radius:20px;
+    z-index:6;opacity:0;transition:opacity .4s ease;pointer-events:none;white-space:nowrap;
+    border:1px solid rgba(255,255,255,0.25);
+  }
+  .spin-hint.show{opacity:1;}
+  .spin-hint.fade{opacity:0;}
   .burger{position:relative;width:320px;}
   .layer{
     width:100%;border-radius:50%;position:relative;
@@ -433,7 +447,7 @@
     .badge, .marquee-track, .marquee-strip, .burger, .patty, .combo-price, .testi-track,
     .heat-glow, .sheen, .impact-ring, .logo .flame{animation:none;}
     .layer{opacity:1;transform:none;animation:none;}
-    .ember-canvas, .impact-ring, .sheen{display:none;}
+    .ember-canvas, .impact-ring, .sheen, .burger3d-mount, .spin-hint{display:none;}
     .reveal, .reveal-stagger > *{opacity:1;transform:none;transition:none;}
     .hero-grid > div:first-child > *, .burger-stage{opacity:1;transform:none;animation:none;}
     .burger-tilt{transform:none !important;}
@@ -515,21 +529,25 @@
         <a href="#visit" class="btn btn-ghost">Find a Location</a>
       </div>
     </div>
-    <div class="burger-stage">
+    <div class="burger-stage" id="burgerStage">
       <div class="heat-glow"></div>
-      <div class="steam" id="steamHost"></div>
-      <div class="burger-tilt" id="burgerTilt">
-        <div class="burger">
-          <div class="badge">FRESH<br>SMASHED<br>DAILY</div>
-          <div class="layer bun-top"><div class="sheen"></div></div>
-          <div class="layer lettuce"></div>
-          <div class="layer cheese"></div>
-          <div class="layer patty"></div>
-          <div class="layer tomato"></div>
-          <div class="layer bun-bottom"></div>
+      <div id="burger3D" class="burger3d-mount"></div>
+      <div class="badge">FRESH<br>SMASHED<br>DAILY</div>
+      <div class="spin-hint" id="spinHint">drag to spin · tap to explode</div>
+      <div class="css-fallback" id="cssFallback">
+        <div class="steam" id="steamHost"></div>
+        <div class="burger-tilt" id="burgerTilt">
+          <div class="burger">
+            <div class="layer bun-top"><div class="sheen"></div></div>
+            <div class="layer lettuce"></div>
+            <div class="layer cheese"></div>
+            <div class="layer patty"></div>
+            <div class="layer tomato"></div>
+            <div class="layer bun-bottom"></div>
+          </div>
         </div>
+        <div class="impact-ring"></div>
       </div>
-      <div class="impact-ring"></div>
     </div>
   </div>
   <canvas class="ember-canvas" id="emberCanvas"></canvas>
@@ -688,6 +706,7 @@
 
 <button class="to-top" id="toTop" aria-label="Scroll to top">↑</button>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
   // Mobile nav toggle
   const navToggle = document.getElementById('navToggle');
@@ -827,7 +846,7 @@
     tickEmbers();
   }
 
-  // Subtle 3D parallax tilt on the burger, following the cursor
+  // Subtle 3D parallax tilt on the CSS fallback burger (only relevant if WebGL 3D fails to load)
   const burgerStageEl = document.querySelector('.burger-stage');
   const burgerTiltEl = document.getElementById('burgerTilt');
   if (burgerStageEl && burgerTiltEl && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
@@ -841,6 +860,370 @@
       burgerTiltEl.style.transform = 'rotateX(0deg) rotateY(0deg)';
     });
   }
+
+  // ---------- REAL-TIME 3D BURGER (WebGL / three.js) ----------
+  // Progressive enhancement: if WebGL / three.js isn't available, the CSS burger above stays visible.
+  (function initBurger3D() {
+    const stage = document.getElementById('burgerStage');
+    const mount = document.getElementById('burger3D');
+    const fallback = document.getElementById('cssFallback');
+    const spinHint = document.getElementById('spinHint');
+    if (!stage || !mount || !fallback || typeof THREE === 'undefined') return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    let renderer;
+    try {
+      renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    } catch (e) { return; }
+    if (!renderer) return;
+
+    // Success — hide the CSS fallback burger, mount the real 3D scene
+    fallback.style.display = 'none';
+
+    let W = mount.clientWidth || stage.clientWidth || 400;
+    let H = mount.clientHeight || stage.clientHeight || 420;
+
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    renderer.setSize(W, H);
+    renderer.setClearColor(0x000000, 0);
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    mount.appendChild(renderer.domElement);
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(30, W / H, 0.1, 100);
+    camera.position.set(0, 1.2, 8.6);
+    camera.lookAt(0, 0.35, 0);
+
+    // ---- Lights ----
+    scene.add(new THREE.HemisphereLight(0xffe3b0, 0x1c1c1c, 0.7));
+    const key = new THREE.DirectionalLight(0xffd27a, 1.15);
+    key.position.set(3.5, 6, 4);
+    key.castShadow = true;
+    key.shadow.mapSize.set(1024, 1024);
+    key.shadow.camera.left = -4; key.shadow.camera.right = 4;
+    key.shadow.camera.top = 4; key.shadow.camera.bottom = -4;
+    scene.add(key);
+    const rim = new THREE.PointLight(0xff3b3b, 1.6, 14);
+    rim.position.set(-3.5, 2, -3.5);
+    scene.add(rim);
+    const fillLight = new THREE.PointLight(0xf2b705, 0.9, 14);
+    fillLight.position.set(2.5, -1, 3.5);
+    scene.add(fillLight);
+
+    // ---- Ground shadow catcher (invisible except for its soft shadow) ----
+    const ground = new THREE.Mesh(
+      new THREE.CircleGeometry(3.4, 48),
+      new THREE.ShadowMaterial({ opacity: 0.35 })
+    );
+    ground.rotation.x = -Math.PI / 2;
+    ground.position.y = -1.65;
+    ground.receiveShadow = true;
+    scene.add(ground);
+
+    // ---- Burger group ----
+    const burgerGroup = new THREE.Group();
+    scene.add(burgerGroup);
+
+    function wavyShape(radius, waves, depth, segments) {
+      segments = segments || 72;
+      const shape = new THREE.Shape();
+      for (let i = 0; i <= segments; i++) {
+        const t = (i / segments) * Math.PI * 2;
+        const r = radius + Math.sin(t * waves) * depth;
+        const x = Math.cos(t) * r;
+        const y = Math.sin(t) * r;
+        if (i === 0) shape.moveTo(x, y); else shape.lineTo(x, y);
+      }
+      return shape;
+    }
+
+    function makeFlatMesh(shape, depth, color, roughness, metalness) {
+      const geo = new THREE.ExtrudeGeometry(shape, { depth: depth, bevelEnabled: true, bevelThickness: 0.02, bevelSize: 0.02, bevelSegments: 2, curveSegments: 32 });
+      geo.rotateX(-Math.PI / 2);
+      geo.center();
+      const mat = new THREE.MeshStandardMaterial({ color, roughness, metalness, side: THREE.DoubleSide });
+      const mesh = new THREE.Mesh(geo, mat);
+      mesh.castShadow = true;
+      mesh.receiveShadow = true;
+      return mesh;
+    }
+
+    const parts = [];
+    function addPart(mesh, finalY, entrance) {
+      const applyOpacity = (v) => {
+        if (mesh.material) { mesh.material.transparent = true; mesh.material.opacity = v; }
+        if (mesh.traverse) mesh.traverse((o) => { if (o !== mesh && o.material) { o.material.transparent = true; o.material.opacity = v; } });
+      };
+      mesh.position.y = finalY;
+      burgerGroup.add(mesh);
+      const entry = {
+        mesh,
+        finalPos: new THREE.Vector3(0, finalY, 0),
+        finalRot: mesh.rotation.clone(),
+        startPos: new THREE.Vector3(entrance.x || 0, finalY + (entrance.y || 2.4), entrance.z || 0),
+        startRot: new THREE.Euler(entrance.rx || 0, entrance.ry || 0, entrance.rz || 0),
+        delay: entrance.delay || 0,
+        duration: entrance.duration || 0.6,
+        done: false,
+        applyOpacity,
+        explodeStart: null,
+        explodeFrom: 0,
+        explodeTo: 0
+      };
+      parts.push(entry);
+      mesh.position.copy(entry.startPos);
+      mesh.rotation.copy(entry.startRot);
+      applyOpacity(0);
+      return mesh;
+    }
+
+    // Bottom bun (dome facing down)
+    const bottomBunGeo = new THREE.SphereGeometry(1.2, 40, 24, 0, Math.PI * 2, 0, Math.PI / 2);
+    bottomBunGeo.scale(1, 0.5, 1);
+    const bottomBun = new THREE.Mesh(bottomBunGeo, new THREE.MeshStandardMaterial({ color: 0xb26b1b, roughness: 0.65 }));
+    bottomBun.rotation.x = Math.PI;
+    bottomBun.castShadow = true; bottomBun.receiveShadow = true;
+    addPart(bottomBun, -1.15, { y: 1.6, rx: 0.4, delay: 1.7, duration: 0.6 });
+
+    // Patty
+    const pattyGeo = new THREE.CylinderGeometry(1.12, 1.18, 0.42, 40);
+    const patty = new THREE.Mesh(pattyGeo, new THREE.MeshStandardMaterial({ color: 0x3b2a22, roughness: 0.85 }));
+    patty.castShadow = true; patty.receiveShadow = true;
+    addPart(patty, -0.62, { y: 2.6, rz: 0.6, delay: 1.4, duration: 0.55 });
+
+    // Cheese (drippy wavy slice)
+    const cheeseShape = wavyShape(1.05, 7, 0.16);
+    const cheese = makeFlatMesh(cheeseShape, 0.05, 0xf2b705, 0.35, 0.05);
+    addPart(cheese, -0.34, { y: 2.2, rz: -0.5, delay: 1.25, duration: 0.5 });
+
+    // Lettuce (crinkled wavy leaf)
+    const lettuceShape = wavyShape(1.18, 16, 0.1);
+    const lettuce = makeFlatMesh(lettuceShape, 0.06, 0x4f9d3d, 0.9, 0);
+    addPart(lettuce, -0.16, { y: 2.4, rz: 0.5, delay: 1.1, duration: 0.5 });
+
+    // Tomato slice (two-tone disc)
+    const tomatoGroup = new THREE.Group();
+    const tomatoMat = new THREE.MeshStandardMaterial({ color: 0xc8102e, roughness: 0.4 });
+    const tomatoPulpMat = new THREE.MeshStandardMaterial({ color: 0xe25b6b, roughness: 0.5 });
+    const t1 = new THREE.Mesh(new THREE.CylinderGeometry(0.85, 0.85, 0.08, 32), tomatoMat);
+    const t2 = new THREE.Mesh(new THREE.CylinderGeometry(0.55, 0.55, 0.09, 32), tomatoPulpMat);
+    t1.position.set(-0.15, 0, 0.1); t2.position.set(-0.15, 0.005, 0.1);
+    tomatoGroup.add(t1, t2);
+    tomatoGroup.traverse((o) => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; } });
+    addPart(tomatoGroup, 0.0, { y: 2.0, rz: -0.4, delay: 0.95, duration: 0.5 });
+
+    // Top bun (dome + scattered sesame seeds)
+    const topBunGroup = new THREE.Group();
+    const topBunGeo = new THREE.SphereGeometry(1.22, 40, 24, 0, Math.PI * 2, 0, Math.PI / 2);
+    topBunGeo.scale(1, 0.62, 1);
+    const topBun = new THREE.Mesh(topBunGeo, new THREE.MeshStandardMaterial({ color: 0xe8a33d, roughness: 0.55 }));
+    topBun.castShadow = true; topBun.receiveShadow = true;
+    topBunGroup.add(topBun);
+    const seedGeo = new THREE.SphereGeometry(0.045, 6, 6);
+    const seedMat = new THREE.MeshStandardMaterial({ color: 0xfff3d6, roughness: 0.6 });
+    for (let i = 0; i < 26; i++) {
+      const theta = Math.random() * Math.PI * 2;
+      const phi = Math.random() * (Math.PI / 2) * 0.72;
+      const r = 1.24;
+      const sx = r * Math.sin(phi) * Math.cos(theta);
+      const sy = r * Math.cos(phi) * 0.62;
+      const sz = r * Math.sin(phi) * Math.sin(theta);
+      const seed = new THREE.Mesh(seedGeo, seedMat);
+      seed.position.set(sx, sy, sz);
+      seed.scale.set(1, 0.6, 1.6);
+      seed.lookAt(sx * 2, sy * 2 + 1, sz * 2);
+      seed.castShadow = true;
+      topBunGroup.add(seed);
+    }
+    addPart(topBunGroup, 0.42, { y: 3.0, rx: -0.5, delay: 0.8, duration: 0.65 });
+
+    // ---- Warm glow sprite behind the burger (bloom-style look, no post-processing needed) ----
+    function makeGlowTexture() {
+      const c = document.createElement('canvas');
+      c.width = c.height = 256;
+      const g = c.getContext('2d');
+      const grad = g.createRadialGradient(128, 128, 0, 128, 128, 128);
+      grad.addColorStop(0, 'rgba(255,200,80,0.9)');
+      grad.addColorStop(0.4, 'rgba(255,140,40,0.45)');
+      grad.addColorStop(1, 'rgba(255,90,30,0)');
+      g.fillStyle = grad;
+      g.fillRect(0, 0, 256, 256);
+      return new THREE.CanvasTexture(c);
+    }
+    const glowMat = new THREE.SpriteMaterial({ map: makeGlowTexture(), transparent: true, depthWrite: false, blending: THREE.AdditiveBlending });
+    const glowSprite = new THREE.Sprite(glowMat);
+    glowSprite.scale.set(5.2, 5.2, 1);
+    glowSprite.position.set(0, -0.2, -1.4);
+    scene.add(glowSprite);
+
+    // ---- Ember particles rising close around the burger ----
+    const EMBER_COUNT = 34;
+    const emberGeo = new THREE.BufferGeometry();
+    const emberPos = new Float32Array(EMBER_COUNT * 3);
+    const emberData = [];
+    function resetEmber(i) {
+      const d = {
+        x: (Math.random() - 0.5) * 2.4,
+        y: -1.5 - Math.random() * 0.6,
+        z: (Math.random() - 0.5) * 1.6,
+        vy: 0.25 + Math.random() * 0.35,
+        life: 0,
+        maxLife: 180 + Math.random() * 160
+      };
+      emberData[i] = d;
+      return d;
+    }
+    for (let i = 0; i < EMBER_COUNT; i++) {
+      const d = resetEmber(i);
+      emberPos[i * 3] = d.x; emberPos[i * 3 + 1] = d.y; emberPos[i * 3 + 2] = d.z;
+    }
+    emberGeo.setAttribute('position', new THREE.BufferAttribute(emberPos, 3));
+    function makeEmberTexture() {
+      const c = document.createElement('canvas');
+      c.width = c.height = 64;
+      const g = c.getContext('2d');
+      const grad = g.createRadialGradient(32, 32, 0, 32, 32, 32);
+      grad.addColorStop(0, 'rgba(255,230,150,1)');
+      grad.addColorStop(0.5, 'rgba(255,140,40,0.7)');
+      grad.addColorStop(1, 'rgba(255,90,30,0)');
+      g.fillStyle = grad;
+      g.fillRect(0, 0, 64, 64);
+      return new THREE.CanvasTexture(c);
+    }
+    const emberMat = new THREE.PointsMaterial({
+      size: 0.14, map: makeEmberTexture(), transparent: true, depthWrite: false,
+      blending: THREE.AdditiveBlending, sizeAttenuation: true, color: 0xffb347
+    });
+    const emberPoints = new THREE.Points(emberGeo, emberMat);
+    scene.add(emberPoints);
+
+    // ---- Interaction: drag to spin, gentle auto-rotate, hover tilt, tap to explode ----
+    let autoRotate = true;
+    let rotY = 0, rotYTarget = 0;
+    let rotX = 0, rotXTarget = 0;
+    let dragging = false, dragStartX = 0, dragStartRotY = 0, dragMoved = false;
+    let lastDragX = 0, dragVelocity = 0;
+    let exploded = false;
+
+    mount.addEventListener('pointerdown', (e) => {
+      dragging = true; dragMoved = false;
+      dragStartX = e.clientX; dragStartRotY = rotYTarget; lastDragX = e.clientX;
+      autoRotate = false;
+      try { mount.setPointerCapture(e.pointerId); } catch (err) {}
+    });
+    mount.addEventListener('pointermove', (e) => {
+      if (!dragging) {
+        const r = mount.getBoundingClientRect();
+        rotXTarget = ((e.clientY - r.top) / r.height - 0.5) * -0.35;
+        return;
+      }
+      const dx = e.clientX - dragStartX;
+      if (Math.abs(dx) > 4) dragMoved = true;
+      rotYTarget = dragStartRotY + dx * 0.012;
+      dragVelocity = e.clientX - lastDragX;
+      lastDragX = e.clientX;
+    });
+    function endDrag() {
+      if (!dragging) return;
+      dragging = false;
+      rotYTarget += dragVelocity * 0.05;
+      setTimeout(() => { if (!dragging) autoRotate = true; }, 1200);
+      if (!dragMoved) toggleExplode();
+    }
+    mount.addEventListener('pointerup', endDrag);
+    mount.addEventListener('pointercancel', endDrag);
+    mount.addEventListener('mouseleave', () => { if (!dragging) rotXTarget = 0; });
+
+    function toggleExplode() {
+      exploded = !exploded;
+      parts.forEach((p, i) => {
+        p.explodeStart = performance.now();
+        p.explodeFrom = p.mesh.position.y;
+        p.explodeTo = p.finalPos.y + (exploded ? (0.55 + i * 0.42) : 0);
+      });
+    }
+
+    if (spinHint) {
+      setTimeout(() => spinHint.classList.add('show'), 2600);
+      setTimeout(() => spinHint.classList.remove('show'), 7000);
+    }
+
+    function onResize() {
+      W = mount.clientWidth || stage.clientWidth;
+      H = mount.clientHeight || stage.clientHeight;
+      if (!W || !H) return;
+      camera.aspect = W / H;
+      camera.updateProjectionMatrix();
+      renderer.setSize(W, H);
+    }
+    window.addEventListener('resize', onResize);
+
+    function easeOutBack(t) {
+      const c1 = 1.70158, c3 = c1 + 1;
+      return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2);
+    }
+
+    const clock = new THREE.Clock();
+    const startTime = performance.now();
+    function animate() {
+      requestAnimationFrame(animate);
+      const now = performance.now();
+      const elapsed = (now - startTime) / 1000;
+      const dt = clock.getDelta();
+
+      parts.forEach((p) => {
+        if (p.done) return;
+        const t = (elapsed - p.delay) / p.duration;
+        if (t < 0) return;
+        const tt = Math.min(t, 1);
+        const eased = easeOutBack(tt);
+        p.mesh.position.lerpVectors(p.startPos, p.finalPos, Math.min(eased, 1.08));
+        p.mesh.rotation.x = p.startRot.x + (p.finalRot.x - p.startRot.x) * Math.min(tt * 1.15, 1);
+        p.mesh.rotation.y = p.startRot.y + (p.finalRot.y - p.startRot.y) * Math.min(tt * 1.15, 1);
+        p.mesh.rotation.z = p.startRot.z + (p.finalRot.z - p.startRot.z) * Math.min(tt * 1.15, 1);
+        p.applyOpacity(Math.min(tt * 1.6, 1));
+        if (tt >= 1) p.done = true;
+      });
+
+      parts.forEach((p) => {
+        if (p.explodeStart == null) return;
+        const et = Math.min((now - p.explodeStart) / 500, 1);
+        const eased = 1 - Math.pow(1 - et, 3);
+        p.mesh.position.y = p.explodeFrom + (p.explodeTo - p.explodeFrom) * eased;
+      });
+
+      if (elapsed > 2.6) {
+        burgerGroup.position.y = Math.sin(elapsed * 1.1) * 0.08;
+      }
+
+      if (autoRotate && !dragging) rotYTarget += dt * 0.28;
+      rotY += (rotYTarget - rotY) * 0.08;
+      rotX += (rotXTarget - rotX) * 0.08;
+      burgerGroup.rotation.y = rotY;
+      burgerGroup.rotation.x = rotX;
+
+      const pulse = 1 + Math.sin(elapsed * 1.8) * 0.08;
+      glowSprite.scale.set(5.2 * pulse, 5.2 * pulse, 1);
+
+      const posAttr = emberGeo.attributes.position;
+      for (let i = 0; i < EMBER_COUNT; i++) {
+        const d = emberData[i];
+        d.life++;
+        posAttr.array[i * 3 + 1] += d.vy * dt;
+        if (d.life > d.maxLife || posAttr.array[i * 3 + 1] > 2.2) {
+          const nd = resetEmber(i);
+          posAttr.array[i * 3] = nd.x;
+          posAttr.array[i * 3 + 1] = nd.y;
+          posAttr.array[i * 3 + 2] = nd.z;
+        }
+      }
+      posAttr.needsUpdate = true;
+
+      renderer.render(scene, camera);
+    }
+    animate();
+  })();
 
   // Subtle tilt on menu cards following cursor
   document.querySelectorAll('.menu-card').forEach(card => {

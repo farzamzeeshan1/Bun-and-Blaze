@@ -31,7 +31,7 @@
    ============================================================ */
 
 (function () {
-  const GOOGLE_CLIENT_ID = "YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com";
+  const GOOGLE_CLIENT_ID = "1036013438902-ha2ukl8nml1tvopvapq3al37jdh1koov.apps.googleusercontent.com";
   const GOOGLE_CONFIGURED = !GOOGLE_CLIENT_ID.startsWith("YOUR_GOOGLE_CLIENT_ID");
 
   const SESSION_KEY = "bb_session";

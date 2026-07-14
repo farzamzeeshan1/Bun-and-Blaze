@@ -33,15 +33,28 @@
       grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
       gap: 24px;
       margin-bottom: 20px;
+      perspective: 1400px;
     }
     .card {
+      --mx: 50%; --my: 50%;
       background: #fff;
       border: 2px solid var(--char);
       border-radius: 10px;
       overflow: hidden;
-      transition: transform 0.2s, box-shadow 0.2s;
+      position: relative;
+      transition: transform 0.12s ease, box-shadow 0.12s ease;
+      transform-style: preserve-3d;
+      will-change: transform;
+      box-shadow: 0 2px 0 rgba(0,0,0,0.06);
     }
-    .card:hover { transform: translateY(-4px); box-shadow: 0 8px 20px rgba(0,0,0,0.12); }
+    .card::before {
+      content: '';
+      position: absolute; inset: 0; pointer-events: none; z-index: 1;
+      background: radial-gradient(circle 200px at var(--mx) var(--my), rgba(255,255,255,0.45), transparent 70%);
+      opacity: 0; transition: opacity 0.25s ease;
+    }
+    .card:hover::before { opacity: 1; }
+    .card:hover { box-shadow: 0 18px 28px -14px rgba(0,0,0,0.3); }
     .card img {
       width: 100%;
       height: 180px;
@@ -167,5 +180,27 @@
 
 <script src="account.js"></script>
 <script src="menu.js"></script>
+<script>
+  // 3D tilt + cursor spotlight for menu cards (delegated since cards render dynamically)
+  if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const menuContainer = document.getElementById('menuContainer');
+    if (menuContainer) {
+      menuContainer.addEventListener('mousemove', (e) => {
+        const card = e.target.closest('.card');
+        if (!card) return;
+        const r = card.getBoundingClientRect();
+        const px = e.clientX - r.left, py = e.clientY - r.top;
+        const x = px / r.width - 0.5, y = py / r.height - 0.5;
+        card.style.transform = `translateY(-6px) rotateX(${y * -6}deg) rotateY(${x * 6}deg)`;
+        card.style.setProperty('--mx', px + 'px');
+        card.style.setProperty('--my', py + 'px');
+      });
+      menuContainer.addEventListener('mouseout', (e) => {
+        const card = e.target.closest('.card');
+        if (card && !card.contains(e.relatedTarget)) card.style.transform = '';
+      });
+    }
+  }
+</script>
 </body>
 </html>

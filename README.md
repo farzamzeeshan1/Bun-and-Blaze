@@ -2,8 +2,6 @@
 
 A fully responsive, animated website for a fictional fast-food smash-burger brand — built as a portfolio piece to demonstrate front-end design/animation skills plus a real Node.js/Express backend for accounts and order history.
 
-**Live demo:** [add your deployed link here]
-
 ---
 
 ## Overview
@@ -12,8 +10,10 @@ Bun & Blaze is a concept brand built around the idea of fast food that doesn't f
 
 ## Features
 
-- **Custom brand identity** — color palette, typography, and a hand-built CSS/HTML burger illustration (layered divs, no images)
-- **Hero entrance animation, floating burger graphic, scroll reveals, animated stat counters, 3D card tilt, auto-scrolling testimonials, sticky nav, scroll-to-top** — see `bun-and-blaze.html`
+- **Custom brand identity** — color palette, typography, and a from-scratch burger graphic (no stock photos)
+- **Real 3D burger hero** — a WebGL model (Three.js) with layered ingredients that drop and slam into place, drag-to-spin, tap-to-explode into an ingredient breakdown, warm studio lighting with soft shadows, and floating ember particles; automatically falls back to a hand-built CSS/HTML animated burger (layered divs) if the browser doesn't support WebGL
+- **3D-styled graphics throughout** — layered gradient-mesh background, cursor-tracked spotlight + tilt on menu/testimonial/"why us" cards, an embossed 3D combo-price medallion, raised stat chips, and chunky push-style buttons
+- **Scroll reveals, animated stat counters, auto-scrolling testimonials, sticky nav, scroll-to-top** — see `bun-and-blaze.html`
 - **Fully responsive & accessibility-conscious** — keyboard focus states, `prefers-reduced-motion` support
 - **Sign in with Google (or email)** — real Google Identity Services integration, with an email fallback so it works without any setup
 - **Real per-customer order history** — orders are saved through a small Express API to a JSON file on the server (`data/orders.json`), so a customer's order history is the same no matter which browser or device they sign in from
@@ -33,6 +33,7 @@ Bun & Blaze is a concept brand built around the idea of fast food that doesn't f
 - **HTML5** — semantic structure
 - **CSS3** — custom properties, keyframe animations, Grid/Flexbox, shared `common.css` design system, no frameworks
 - **Vanilla JavaScript** — no build step, no front-end framework
+- **Three.js (via CDN)** — powers the WebGL 3D burger hero; loaded from cdnjs at runtime, with an automatic CSS-only fallback if it fails to load or WebGL isn't supported
 
 ## Project Structure
 
@@ -57,7 +58,6 @@ bun-and-blaze/
 Requires [Node.js](https://nodejs.org) (any recent LTS version).
 
 ```bash
-git clone https://github.com/yourusername/bun-and-blaze.git
 cd bun-and-blaze
 npm install
 npm start
